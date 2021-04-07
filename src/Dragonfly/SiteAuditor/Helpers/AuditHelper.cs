@@ -53,15 +53,7 @@
             return docTypesList;
         }
 
-        /// <summary>
-        /// Get a ContentType model for a Doctype by its alias
-        /// </summary>
-        /// <param name="DocTypeAlias"></param>
-        /// <returns></returns>
-        public static ContentType GetContentTypeByAlias(string DocTypeAlias)
-        {
-            return (ContentType)umbContentTypeService.Get(DocTypeAlias);
-        }
+        
 
         /// <summary>
         /// Get a DataTypeDefinition for a Datatype by its DataTypeDefinitionId

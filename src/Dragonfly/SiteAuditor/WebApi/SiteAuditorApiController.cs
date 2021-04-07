@@ -231,7 +231,8 @@
         [System.Web.Http.AcceptVerbs("GET")]
         public IEnumerable<AuditableProperty> GetAllPropertiesAsXml()
         {
-            var siteProps = new SiteAuditableProperties();
+            var saService = GetSiteAuditorService();
+            var siteProps = saService.AllProperties();
             var propertiesList = siteProps.AllProperties;
             return propertiesList;
         }
@@ -240,9 +241,10 @@
         [System.Web.Http.AcceptVerbs("GET")]
         public HttpResponseMessage GetAllPropertiesAsJson()
         {
+            var saService = GetSiteAuditorService();
             var returnSB = new StringBuilder();
 
-            var siteProps = new SiteAuditableProperties();
+            var siteProps = saService.AllProperties();
             var propertiesList = siteProps.AllProperties;
             string json = JsonConvert.SerializeObject(propertiesList);
 
@@ -262,9 +264,10 @@
         [System.Web.Http.AcceptVerbs("GET")]
         public HttpResponseMessage GetAllPropertiesAsHtml()
         {
+            var saService = GetSiteAuditorService();
             var returnSB = new StringBuilder();
 
-            var siteProps = new SiteAuditableProperties();
+            var siteProps = saService.AllProperties();
             var propertiesList = siteProps.AllProperties;
 
             var tableStart = @"
@@ -292,7 +295,7 @@
                 tableData.AppendLine(string.Format("<td>{0}</td>", prop.DataType.Name));
                 tableData.AppendLine(string.Format("<td>{0}</td>", prop.DataType.EditorAlias));
                 tableData.AppendLine(string.Format("<td>{0}</td>", prop.DataType.DatabaseType));
-                tableData.AppendLine(string.Format("<td>{0}</td>", string.Join(", ", prop.AllDocTypes)));
+                tableData.AppendLine(string.Format("<td>{0}</td>", string.Join(", ", prop.AllDocTypes.Select(n=> n.DocTypeAlias))));
                 tableData.AppendLine(string.Format("<td>{0}</td>", prop.AllDocTypes.Count()));
 
                 tableData.AppendLine("</tr>");
@@ -317,9 +320,10 @@
         [System.Web.Http.AcceptVerbs("GET")]
         public HttpResponseMessage GetAllPropertiesAsCsv()
         {
+            var saService = GetSiteAuditorService();
             var returnSB = new StringBuilder();
 
-            var siteProps = new SiteAuditableProperties();
+            var siteProps = saService.AllProperties();
             var propertiesList = siteProps.AllProperties;
 
             var tableData = new StringBuilder();
@@ -336,7 +340,7 @@
                     prop.DataType.Name,
                     prop.DataType.EditorAlias,
                     prop.DataType.DatabaseType,
-                    string.Join(", ", prop.AllDocTypes),
+                    string.Join(", ", prop.AllDocTypes.Select(n => n.DocTypeAlias)),
                     prop.AllDocTypes.Count(),
                     Environment.NewLine);
             }

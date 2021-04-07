@@ -1,16 +1,18 @@
 ﻿namespace Dragonfly.SiteAuditor.Models
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Runtime.Serialization;
     using Dragonfly.SiteAuditor.Helpers;
     using Newtonsoft.Json;
     using Umbraco.Core.Models;
+    using Umbraco.Web.PropertyEditors;
 
     [DataContract]
     public class AuditableProperty
     {
-        private List<PropertyDoctypeInfo> _docTypes;
+        private List<PropertyDoctypeInfo> _docTypes = new List<PropertyDoctypeInfo>();
 
         #region Public Props
         [DataMember]
@@ -33,12 +35,17 @@
         public IDataType DataType { get; internal set; }
 
         [DataMember]
-        public Dictionary<string, string> DataTypeConfig { get; internal set; }
+        public Dictionary<string, string> DataTypeConfigDictionary { get; internal set; }
+
+        [DataMember]
+        public Type DataTypeConfigType { get; internal set; }
 
         [DataMember]
         public bool IsNestedContent { get; internal set; }
         [DataMember]
-        public IEnumerable<NestedContentContentTypesConfigItem> NestedContentDocTypesConfig { get; internal set; }
+        public NestedContentConfiguration.ContentType[] NestedContentDocTypesConfig { get; internal set; }
+
+        
 
         #endregion
 

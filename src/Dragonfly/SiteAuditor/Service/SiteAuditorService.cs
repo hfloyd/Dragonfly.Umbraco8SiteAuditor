@@ -14,6 +14,7 @@
     using Umbraco.Core.Services;
     using Umbraco.Web;
     using Umbraco.Web.Composing;
+    using Umbraco.Web.PropertyEditors;
 
     public class SiteAuditorService
     {
@@ -347,20 +348,20 @@
             allProps.PropsForDoctype = "[All]";
             List<AuditableProperty> propertiesList = new List<AuditableProperty>();
 
-            var allDocTypes = AuditHelper.GetAllContentTypesAliases();
+            var allDocTypes = _services.ContentTypeService.GetAll();
 
-            foreach (var docTypeAlias in allDocTypes)
+            foreach (var docType in allDocTypes)
             {
-                ContentType ct = AuditHelper.GetContentTypeByAlias(docTypeAlias);
+                //var ct = _services.ContentTypeService.Get(docTypeAlias);
 
-                foreach (var prop in ct.PropertyTypes)
+                foreach (var prop in docType.PropertyTypes)
                 {
                     //test for the same property already in list
                     if (propertiesList.Exists(i => i.UmbPropertyType.Alias == prop.Alias & i.UmbPropertyType.Name == prop.Name & i.UmbPropertyType.DataTypeId == prop.DataTypeId))
                     {
                         //Add current DocType to existing property
                         var info = new PropertyDoctypeInfo();
-                        info.DocTypeAlias = docTypeAlias;
+                        info.DocTypeAlias = docType.Alias;
                         info.GroupName = "";
                         propertiesList.Find(i => i.UmbPropertyType.Alias == prop.Alias).AllDocTypes.Add(info);
                     }
@@ -370,7 +371,7 @@
                         AuditableProperty auditProp = PropertyTypeToAuditableProperty(prop);
 
                         var info = new PropertyDoctypeInfo();
-                        info.DocTypeAlias = docTypeAlias;
+                        info.DocTypeAlias = docType.Alias;
                         info.GroupName = "";
 
                         auditProp.AllDocTypes.Add(info);
@@ -383,13 +384,23 @@
             return allProps;
         }
 
+        /// <summary>
+        /// Get a ContentType model for a Doctype by its alias
+        /// </summary>
+        /// <param name="DocTypeAlias"></param>
+        /// <returns></returns>
+        public IContentType GetContentTypeByAlias(string DocTypeAlias)
+        {
+            return _services.ContentTypeService.Get(DocTypeAlias);
+        }
+
         public SiteAuditableProperties AllPropertiesForDocType(string DocTypeAlias)
         {
             var allProps = new SiteAuditableProperties();
             allProps.PropsForDoctype = DocTypeAlias;
             List<AuditableProperty> propertiesList = new List<AuditableProperty>();
 
-            ContentType ct = AuditHelper.GetContentTypeByAlias(DocTypeAlias);
+            var ct = _services.ContentTypeService.Get(DocTypeAlias);
 
             foreach (var prop in ct.PropertyTypes)
             {
@@ -419,14 +430,16 @@
 
             ap.DataType = _services.DataTypeService.GetDataType(UmbPropertyType.DataTypeId);
 
+            ap.DataTypeConfigType = ap.DataType.Configuration.GetType();
             try
             {
                 var configDict = (Dictionary<string, string>)ap.DataType.Configuration;
-                ap.DataTypeConfig = configDict;
+                ap.DataTypeConfigDictionary = configDict;
             }
             catch (Exception e)
             {
                 //ignore
+                ap.DataTypeConfigDictionary = new Dictionary<string, string>();
             }
 
             //var  docTypes = AuditHelper.GetDocTypesForProperty(UmbPropertyType.Alias);
@@ -435,11 +448,12 @@
             if (ap.DataType.EditorAlias.Contains("NestedContent"))
             {
                 ap.IsNestedContent = true;
-                var contentJson = ap.DataTypeConfig["contentTypes"];
+                var config = (NestedContentConfiguration)ap.DataType.Configuration;
+                //var contentJson = ["contentTypes"];
 
-                var types = JsonConvert
-                    .DeserializeObject<IEnumerable<NestedContentContentTypesConfigItem>>(contentJson);
-                ap.NestedContentDocTypesConfig = types;
+                //var types = JsonConvert
+                //    .DeserializeObject<IEnumerable<NestedContentContentTypesConfigItem>>(contentJson);
+                ap.NestedContentDocTypesConfig = config.ContentTypes;
             }
 
             return ap;
