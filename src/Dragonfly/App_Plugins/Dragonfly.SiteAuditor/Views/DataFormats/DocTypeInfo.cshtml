@@ -1,0 +1,11 @@
+
+@model Dragonfly.SiteAuditor.Models.NodePropertyDataTypeInfo
+
+@if (Model.UsesComposition)
+{
+    <span>@Model.DocTypeAlias [@Model.DocTypeCompositionAlias]</span>
+}
+else
+{
+    <span>@Model.DocTypeAlias</span>
+}
