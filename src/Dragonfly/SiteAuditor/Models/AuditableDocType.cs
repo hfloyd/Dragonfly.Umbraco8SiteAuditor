@@ -16,6 +16,7 @@
         public string Name { get; set; }
         public string Alias { get; set; }
         public Guid GUID { get; set; }
+        public int Id { get; set; }
         public string DefaultTemplateName { get; set; }
 
         //TODO: Add Info about compositions/parents/folders: IsComposition, HasCompositions, etc.
@@ -31,6 +32,7 @@
             this.Name = ContentType.Name;
             this.Alias = ContentType.Alias;
             this.GUID = ContentType.Key;
+            this.Id = ContentType.Id;
 
             if (ContentType.DefaultTemplate != null)
             {

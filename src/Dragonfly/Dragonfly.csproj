@@ -8,14 +8,14 @@
     <Authors>Heather Floyd</Authors>
     <Company></Company>
     <Product>Dragonfly</Product>
-    <Description>A collection of tools to extract data about an Umbraco site.</Description>
-    <PackageLicenseUrl>https://github.com/hfloyd/Dragonfly.XXXX/blob/master/LICENSE.md</PackageLicenseUrl>
+    <Description>A collection of tools to extract data about an Umbraco 8 site.</Description>
+    <PackageLicenseUrl>https://github.com/hfloyd/Dragonfly.Umbraco8SiteAuditor/blob/master/LICENSE.md</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/hfloyd/Dragonfly.Umbraco8SiteAuditor</PackageProjectUrl>
     <RepositoryUrl>https://github.com/hfloyd/Dragonfly.Umbraco8SiteAuditor</RepositoryUrl>
     <PackageId>Dragonfly.Umbraco8SiteAuditor</PackageId>
-    <Version>0.1.0</Version>
+    <Version>0.1.2</Version>
     <AssemblyName>Dragonfly.Umbraco8SiteAuditor</AssemblyName>
-    <PackageReleaseNotes>Conversion of v7 Package</PackageReleaseNotes>
+    <PackageReleaseNotes>Addition of Auditable Doctype</PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="SiteAuditor\Models\Dtos\**" />
@@ -43,6 +43,6 @@
   <Import Project="..\Custom.targets" />
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="XCOPY /s /y &quot;$(TargetDir)$(TargetName).*&quot; &quot;C:\Users\Heather\NAS Folders\Active Projects\Webs\HeatherFloyd.com\sourcecode\UmbracoCms.8.12.2\bin&quot;" />
+    <Exec Command="XCOPY /s /y &quot;$(TargetDir)$(TargetName).*&quot; &quot;C:\Users\Heather\NAS Folders\Active Projects\Webs\Clients\GHXL\sourcecode\Ghx.Web\bin&quot;&#xD;&#xA;&#xD;&#xA;XCOPY /s /y /i &quot;$(ProjectDir)App_Plugins\*&quot; &quot;C:\Users\Heather\NAS Folders\Active Projects\Webs\Clients\GHXL\sourcecode\Ghx.Web\App_Plugins&quot;&#xD;&#xA;" />
   </Target>
 </Project>

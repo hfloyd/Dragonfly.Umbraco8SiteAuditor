@@ -10,7 +10,7 @@
     using Dragonfly.NetModels;
     using Dragonfly.SiteAuditor.Models;
     using Dragonfly.UmbracoHelpers;
-    using Lucene.Net.Support;
+
     using Newtonsoft.Json;
     using Umbraco.Web.WebApi;
 
@@ -32,7 +32,7 @@
 
             returnSB.AppendLine("<h1>Site Auditor</h1>");
 
-            returnSB.AppendLine("<h2>Information about Content</h2>");
+            returnSB.AppendLine("<h2>Content</h2>");
 
             returnSB.AppendLine("<h3>All Content Nodes</h3>");
             returnSB.AppendLine("<p>These will take a long time to run for large sites. Please be patient.</p>");
@@ -43,7 +43,14 @@
             returnSB.AppendLine("<li><a target=\"_blank\" href=\"/Umbraco/backoffice/Api/SiteAuditorApi/GetAllContentAsCsv\">Get All Content As Csv</a> [no parameters]</li>");
             returnSB.AppendLine("</ul>");
 
-            returnSB.AppendLine("<h2>Information about Document Types</h2>");
+            returnSB.AppendLine("<h3>Content Nodes with Property Data</h3>");
+            //returnSB.AppendLine("<p>Note</p>");
+            returnSB.AppendLine("<ul>");
+            returnSB.AppendLine("<li><a target=\"_blank\" href=\"/Umbraco/backoffice/Api/SiteAuditorApi/GetContentWithValues\">Get Content With Values</a></li>");
+            returnSB.AppendLine("</ul>");
+
+
+            returnSB.AppendLine("<h2>Document Types</h2>");
 
             returnSB.AppendLine("<h3>All DocTypes</h3>");
             //returnSB.AppendLine("<p>Note</p>");
@@ -54,7 +61,7 @@
             returnSB.AppendLine("<li><a target=\"_blank\" href=\"/Umbraco/backoffice/Api/SiteAuditorApi/GetAllDocTypesAsCsv\">Get All Doctypes As Csv</a> [no parameters]</li>");
             returnSB.AppendLine("</ul>");
 
-            returnSB.AppendLine("<h2>Information about Document Type Properties</h2>");
+            returnSB.AppendLine("<h2>Document Type Properties</h2>");
 
             returnSB.AppendLine("<h3>All Properties</h3>");
             //returnSB.AppendLine("<p>Note</p>");
@@ -65,13 +72,19 @@
             returnSB.AppendLine("<li><a target=\"_blank\" href=\"/Umbraco/backoffice/Api/SiteAuditorApi/GetAllPropertiesAsCsv\">Get All Properties As Csv</a> [no parameters]</li>");
             returnSB.AppendLine("</ul>");
 
+            returnSB.AppendLine("<h2>Data Types</h2>");
 
-            returnSB.AppendLine("<h3>Content Nodes with Property Data</h3>");
+            returnSB.AppendLine("<h3>All DataTypes</h3>");
             //returnSB.AppendLine("<p>Note</p>");
             returnSB.AppendLine("<ul>");
-            returnSB.AppendLine("<li><a target=\"_blank\" href=\"/Umbraco/backoffice/Api/SiteAuditorApi/GetContentWithValues\">Get Content With Values</a></li>");
+            returnSB.AppendLine("<li><a target=\"_blank\" href=\"/Umbraco/backoffice/Api/SiteAuditorApi/GetAllDataTypesAsXml\">Get All DataTypes As Xml</a> [no parameters]</li>");
+            returnSB.AppendLine("<li><a target=\"_blank\" href=\"/Umbraco/backoffice/Api/SiteAuditorApi/GetAllDataTypesAsJson\">Get All DataTypes As Json</a> [no parameters]</li>");
+            returnSB.AppendLine("<li><a target=\"_blank\" href=\"/Umbraco/backoffice/Api/SiteAuditorApi/GetAllDataTypesAsHtml\">Get All DataTypes As Html</a> [no parameters]</li>");
+            returnSB.AppendLine("<li><a target=\"_blank\" href=\"/Umbraco/backoffice/Api/SiteAuditorApi/GetAllDataTypesAsCsv\">Get All DataTypes As Csv</a> [no parameters]</li>");
             returnSB.AppendLine("</ul>");
 
+
+           
             //returnSB.AppendLine("<h3>All Content Nodes</h3>");
             //returnSB.AppendLine("<p>Note</p>");
             //returnSB.AppendLine("<ul>");
@@ -88,6 +101,11 @@
             };
         }
 
+        private SiteAuditorService GetSiteAuditorService()
+        {
+            return new SiteAuditorService(Umbraco, UmbracoContext, Services, Logger);
+        }
+        
         #region Content Nodes
 
         /// /Umbraco/backoffice/Api/SiteAuditorApi/GetAllContentAsXml
@@ -127,56 +145,86 @@
         [System.Web.Http.AcceptVerbs("GET")]
         public HttpResponseMessage GetAllContentAsHtmlTable()
         {
+            var returnSB = new StringBuilder();
             var saService = GetSiteAuditorService();
 
-            //TODO: Use Partial View
-            var returnSB = new StringBuilder();
-
+            var pvPath = "/App_Plugins/Dragonfly.SiteAuditor/Views/AllContentAsHtmlTable.cshtml"; // _TesterConfig.GetAppPluginsPath() + "Views/Start.cshtml";
+            
             var allNodes = saService.GetContentNodes();
 
-            var tableStart = @"
-                <table>
-                    <tr>
-                        <th>Node Name</th>
-                        <th>NodeID</th>
-                        <th>Node Path</th>
-                        <th>DocType</th>
-                        <th>ParentID</th>
-                        <th>Full URL</th>
-                        <th>Level</th>
-                        <th>Sort Order</th>
-                        <th>Template Name</th>
-                        <th>Create Date</th>
-                        <th>Update Date</th>
-                    </tr>";
+            //var tableStart = @"
+            //    <table>
+            //        <tr>
+            //            <th>Node Name</th>
+            //            <th>NodeID</th>
+            //            <th>Node Path</th>
+            //            <th>DocType</th>
+            //            <th>ParentID</th>
+            //            <th>Full URL</th>
+            //            <th>Level</th>
+            //            <th>Sort Order</th>
+            //            <th>Template Name</th>
+            //            <th>Create Date</th>
+            //            <th>Update Date</th>
+            //        </tr>";
 
-            var tableEnd = @"</table>";
+            //var tableEnd = @"</table>";
 
-            var tableData = new StringBuilder();
+            //var tableData = new StringBuilder();
 
-            foreach (var auditNode in allNodes)
+            //foreach (var auditNode in allNodes)
+            //{
+            //    tableData.AppendLine("<tr>");
+
+            //    tableData.AppendLine(string.Format("<td>{0}</td>", auditNode.UmbContentNode.Name));
+            //    tableData.AppendLine(string.Format("<td>{0}</td>", auditNode.UmbContentNode.Id));
+            //    tableData.AppendLine(string.Format("<td>{0}</td>", auditNode.NodePathAsText));
+            //    tableData.AppendLine(string.Format("<td>{0}</td>", auditNode.UmbContentNode.ContentType.Alias));
+            //    tableData.AppendLine(string.Format("<td>{0}</td>", auditNode.UmbContentNode.ParentId));
+            //    tableData.AppendLine(string.Format("<td><a href=\"{0}\" target=\"_blank\">{0}</a></td>", auditNode.FullNiceUrl));
+            //    tableData.AppendLine(string.Format("<td>{0}</td>", auditNode.UmbContentNode.Level));
+            //    tableData.AppendLine(string.Format("<td>{0}</td>", auditNode.UmbContentNode.SortOrder));
+            //    tableData.AppendLine(string.Format("<td>{0}</td>", auditNode.TemplateAlias));
+            //    tableData.AppendLine(string.Format("<td>{0}</td>", auditNode.UmbContentNode.CreateDate));
+            //    tableData.AppendLine(string.Format("<td>{0}</td>", auditNode.UmbContentNode.UpdateDate));
+
+            //    tableData.AppendLine("</tr>");
+            //}
+
+            //returnSB.AppendLine(tableStart);
+            //returnSB.Append(tableData);
+            //returnSB.AppendLine(tableEnd);
+            //VIEW DATA 
+            var viewData = new ViewDataDictionary();
+            viewData.Model = allNodes;
+            //viewData.Add("FilesList", dataTypes);
+            //viewData.Add("SpecialMessage", specialMessage);
+            //viewData.Add("SpecialMessageClass", specialMessageClass);
+            //viewData.Add("DeleteOptions", FilesIO.GetFilesOptions());
+
+            //RENDER
+            try
             {
-                tableData.AppendLine("<tr>");
-
-                tableData.AppendLine(string.Format("<td>{0}</td>", auditNode.UmbContentNode.Name));
-                tableData.AppendLine(string.Format("<td>{0}</td>", auditNode.UmbContentNode.Id));
-                tableData.AppendLine(string.Format("<td>{0}</td>", auditNode.NodePathAsText));
-                tableData.AppendLine(string.Format("<td>{0}</td>", auditNode.UmbContentNode.ContentType.Alias));
-                tableData.AppendLine(string.Format("<td>{0}</td>", auditNode.UmbContentNode.ParentId));
-                tableData.AppendLine(string.Format("<td><a href=\"{0}\" target=\"_blank\">{0}</a></td>", auditNode.FullNiceUrl));
-                tableData.AppendLine(string.Format("<td>{0}</td>", auditNode.UmbContentNode.Level));
-                tableData.AppendLine(string.Format("<td>{0}</td>", auditNode.UmbContentNode.SortOrder));
-                tableData.AppendLine(string.Format("<td>{0}</td>", auditNode.TemplateAlias));
-                tableData.AppendLine(string.Format("<td>{0}</td>", auditNode.UmbContentNode.CreateDate));
-                tableData.AppendLine(string.Format("<td>{0}</td>", auditNode.UmbContentNode.UpdateDate));
-
-                tableData.AppendLine("</tr>");
+                var controllerContext = this.ControllerContext;
+                var displayHtml =
+                    ApiControllerHtmlHelper.GetPartialViewHtml(controllerContext, pvPath, viewData, HttpContext.Current);
+                returnSB.AppendLine(displayHtml);
             }
+            catch (System.ArgumentNullException eNull)
+            {
+                if (eNull.Message.Contains("Parameter name: view"))
+                {
+                    throw new ArgumentNullException($"The View file '{pvPath}' is missing and cannot be rendered.", eNull);
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            catch (Exception e)
+            { throw; }
 
-            returnSB.AppendLine(tableStart);
-            returnSB.Append(tableData);
-            returnSB.AppendLine(tableEnd);
-
+            //RETURN AS HTML
             return new HttpResponseMessage()
             {
                 Content = new StringContent(
@@ -225,6 +273,88 @@
 
         #endregion
 
+        #region GetContentWithValues
+
+        /// /Umbraco/backoffice/Api/SiteAuditorApi/GetContentWithValues?PropertyAlias=xxx&IncludeUnpublished=false
+        [System.Web.Http.AcceptVerbs("GET")]
+        public HttpResponseMessage GetContentWithValues(string PropertyAlias, bool IncludeUnpublished = false)
+        {
+            var saService = GetSiteAuditorService();
+            var returnSB = new StringBuilder();
+            var fancyFormat = true;
+
+            var pvPath = "~/App_Plugins/Dragonfly.SiteAuditor/Views/ContentWithValuesTable.cshtml";
+
+            //FIND NODES TO DISPLAY
+            var allNodes = saService.GetAllNodes().ToList();
+            var nodesWithValue = allNodes.Where(n => n.Properties.Where(p => p.Alias == PropertyAlias && p.HasValue()).Any()).ToList();
+
+            //VIEW DATA 
+            var viewData = new ViewDataDictionary();
+            viewData.Model = nodesWithValue;
+            viewData.Add("PropertyAlias", PropertyAlias);
+            viewData.Add("IncludeUnpublished", IncludeUnpublished);
+
+            //RENDER
+            var controllerContext = this.ControllerContext;
+            var displayHtml = ApiControllerHtmlHelper.GetPartialViewHtml(controllerContext, pvPath, viewData, HttpContext.Current);
+            returnSB.AppendLine(displayHtml);
+
+            return new HttpResponseMessage()
+            {
+                Content = new StringContent(
+                    returnSB.ToString(),
+                    Encoding.UTF8,
+                    "text/html"
+                )
+            };
+        }
+
+        /// /Umbraco/backoffice/Api/SiteAuditorApi/GetContentWithValues
+        [System.Web.Http.AcceptVerbs("GET")]
+        public HttpResponseMessage GetContentWithValues()
+        {
+            var saService = GetSiteAuditorService();
+            var returnSB = new StringBuilder();
+
+            //BUILD HTML
+            var allSiteDocTypes = saService.GetAllDocTypes();
+
+            var allProps = allSiteDocTypes.SelectMany(n => n.PropertyTypes);
+
+            var allPropsAliases = allProps.Select(n => n.Alias).Distinct();
+
+            //BUILD HTML
+            returnSB.AppendLine($"<h1>Get Content with Values</h1>");
+            returnSB.AppendLine($"<h3>Available Properties</h3>");
+            returnSB.AppendLine("<p>Note: Choosing the 'All' option will take significantly longer to load than the 'Published' option because we need to bypass the cache and query the database directly.</p>");
+
+            returnSB.AppendLine("<ul>");
+
+            foreach (var propAlias in allPropsAliases.OrderBy(n => n))
+            {
+                var url1 =
+                    $"/Umbraco/backoffice/Api/SiteAuditorApi/GetContentWithValues?PropertyAlias={propAlias}&IncludeUnpublished=false";
+                var url2 =
+                    $"/Umbraco/backoffice/Api/SiteAuditorApi/GetContentWithValues?PropertyAlias={propAlias}&IncludeUnpublished=true";
+
+                returnSB.AppendLine($"<li>{propAlias} <a target=\"_blank\" href=\"{url1}\">Published</a> | <a target=\"_blank\" href=\"{url2}\">All</a></li>");
+            }
+
+            returnSB.AppendLine("</ul>");
+
+            return new HttpResponseMessage()
+            {
+                Content = new StringContent(
+                    returnSB.ToString(),
+                    Encoding.UTF8,
+                    "text/html"
+                )
+            };
+        }
+
+        #endregion
+
         #region Properties Info
 
         // /Umbraco/backoffice/Api/SiteAuditorApi/GetAllPropertiesAsXml
@@ -262,7 +392,7 @@
 
         // /Umbraco/backoffice/Api/SiteAuditorApi/GetAllPropertiesAsHtml
         [System.Web.Http.AcceptVerbs("GET")]
-        public HttpResponseMessage GetAllPropertiesAsHtml()
+        public HttpResponseMessage GetAllPropertiesAsHtmlTable()
         {
             var saService = GetSiteAuditorService();
             var returnSB = new StringBuilder();
@@ -295,7 +425,7 @@
                 tableData.AppendLine(string.Format("<td>{0}</td>", prop.DataType.Name));
                 tableData.AppendLine(string.Format("<td>{0}</td>", prop.DataType.EditorAlias));
                 tableData.AppendLine(string.Format("<td>{0}</td>", prop.DataType.DatabaseType));
-                tableData.AppendLine(string.Format("<td>{0}</td>", string.Join(", ", prop.AllDocTypes.Select(n=> n.DocTypeAlias))));
+                tableData.AppendLine(string.Format("<td>{0}</td>", string.Join(", ", prop.AllDocTypes.Select(n => n.DocTypeAlias))));
                 tableData.AppendLine(string.Format("<td>{0}</td>", prop.AllDocTypes.Count()));
 
                 tableData.AppendLine("</tr>");
@@ -329,7 +459,7 @@
             var tableData = new StringBuilder();
 
             tableData.AppendLine(
-                "\"Property Name\",\"Property Alias\",\"DataType Name\",\"DataType Property Editor\",\"DataType Database Type\",\"DocumentTypes Used In\",\"Qty of DocumentTypes\"" );
+                "\"Property Name\",\"Property Alias\",\"DataType Name\",\"DataType Property Editor\",\"DataType Database Type\",\"DocumentTypes Used In\",\"Qty of DocumentTypes\"");
 
             foreach (var prop in propertiesList)
             {
@@ -365,44 +495,162 @@
 
         #region DataType Info
 
-        /// /Umbraco/backoffice/Api/SiteAuditorApi/ListAllDataTypes?ForExport=false
+        // /Umbraco/backoffice/Api/SiteAuditorApi/GetAllDataTypesAsXml
         [System.Web.Http.AcceptVerbs("GET")]
-        public StatusMessage ListAllDataTypes(bool ForExport)
+        public IEnumerable<AuditableDataType> GetAllDataTypesAsXml()
         {
-            var returnMsg = new StatusMessage();
-            var msgSB = new StringBuilder();
+            var saService = GetSiteAuditorService();
+            var dataTypes = saService.AllDataTypes();
 
-            var datatypeService = this.Services.DataTypeService;
+            return dataTypes;
+        }
 
-            var datatypes = datatypeService.GetAll();
+        /// /Umbraco/backoffice/Api/SiteAuditorApi/GetAllDataTypesAsJson
+        [System.Web.Http.AcceptVerbs("GET")]
+        public HttpResponseMessage GetAllDataTypesAsJson()
+        {
+            var saService = GetSiteAuditorService();
+            var returnSB = new StringBuilder();
 
-            if (ForExport)
+            var dataTypes = saService.AllDataTypes();
+            string json = JsonConvert.SerializeObject(dataTypes);
+
+            returnSB.AppendLine(json);
+
+            return new HttpResponseMessage()
             {
-                msgSB.AppendLine(" ");
-                msgSB.AppendLine(string.Format("{0}|{1}|{2}", "Name", "Property Editor Alias", "GUID"));
+                Content = new StringContent(
+                    returnSB.ToString(),
+                    Encoding.UTF8,
+                    "application/json"
+                )
+            };
+        }
+
+        // /Umbraco/backoffice/Api/SiteAuditorApi/GetAllDataTypesAsHtml
+        [System.Web.Http.AcceptVerbs("GET")]
+        public HttpResponseMessage GetAllDataTypesAsHtmlTable()
+        {
+            var pvPath = "/App_Plugins/Dragonfly.SiteAuditor/Views/AllDataTypesAsHtmlTable.cshtml"; // _TesterConfig.GetAppPluginsPath() + "Views/Start.cshtml";
+
+            //var returnStatusMsg = new StatusMessage(true); //assume success
+            var saService = GetSiteAuditorService();
+            var returnSB = new StringBuilder();
+
+            var dataTypes = saService.AllDataTypes();
+
+           //VIEW DATA 
+            var viewData = new ViewDataDictionary();
+            viewData.Model = dataTypes;
+            //viewData.Add("FilesList", dataTypes);
+            //viewData.Add("SpecialMessage", specialMessage);
+            //viewData.Add("SpecialMessageClass", specialMessageClass);
+            //viewData.Add("DeleteOptions", FilesIO.GetFilesOptions());
+
+            //RENDER
+            try
+            {
+                var controllerContext = this.ControllerContext;
+                var displayHtml =
+                    ApiControllerHtmlHelper.GetPartialViewHtml(controllerContext, pvPath, viewData, HttpContext.Current);
+                returnSB.AppendLine(displayHtml);
             }
-            else
+            catch (System.ArgumentNullException eNull)
             {
-                msgSB.AppendLine(string.Format("{0} [{1}] {2}", "Name", "Property Editor Alias", "GUID"));
-            }
-
-
-            foreach (var dt in datatypes)
-            {
-                if (ForExport)
+                if (eNull.Message.Contains("Parameter name: view"))
                 {
-                    msgSB.AppendLine(string.Format("{0}|{1}|{2}", dt.Name, dt.EditorAlias, dt.Key));
+                    throw new ArgumentNullException($"The View file '{pvPath}' is missing and cannot be rendered.",eNull);
                 }
                 else
                 {
-                    msgSB.AppendLine(string.Format("{0} [{1}] {2}", dt.Name, dt.EditorAlias, dt.Key));
+                    throw;
                 }
             }
+            catch(Exception e)
+            { throw; }
 
-            returnMsg.Message = msgSB.ToString();
-            returnMsg.Success = true;
-            return returnMsg;
+            //RETURN AS HTML
+            return new HttpResponseMessage()
+            {
+                Content = new StringContent(
+                    returnSB.ToString(),
+                    Encoding.UTF8,
+                    "text/html"
+                )
+            };
         }
+
+
+        /// /Umbraco/backoffice/Api/SiteAuditorApi/GetAllDataTypesAsCsv
+        [System.Web.Http.AcceptVerbs("GET")]
+        public HttpResponseMessage GetAllDataTypesAsCsv()
+        {
+            var saService = GetSiteAuditorService();
+            var returnSB = new StringBuilder();
+
+            var dataTypes = saService.AllDataTypes();
+
+            var tableData = new StringBuilder();
+
+            tableData.AppendLine(
+                "\"DataType Name\",\"Property Editor Alias\",\"Id\",\"Guid Key\",\"Used On Properties\",\"Qty of Properties\"");
+
+            foreach (var dt in dataTypes)
+            {
+                tableData.AppendFormat(
+                    "\"{0}\",\"{1}\",{2},\"{3}\",\"{4}\",{5}{6}",
+                    dt.Name,
+                    dt.EditorAlias,
+                    dt.Id,
+                    dt.Guid.ToString(),
+                    string.Join(" | ", dt.UsedOnProperties.Select(n => $"{n.Value} [{n.Key.Alias}]")),
+                    dt.UsedOnProperties.Count(),
+                    Environment.NewLine);
+            }
+
+            returnSB.Append(tableData);
+
+            return Dragonfly.NetHelpers.Http.StringBuilderToFile(returnSB, "AllDataTypes.csv");
+        }
+
+        ///// /Umbraco/backoffice/Api/SiteAuditorApi/ListAllDataTypes?ForExport=false
+        //[System.Web.Http.AcceptVerbs("GET")]
+        //public StatusMessage ListAllDataTypes(bool ForExport)
+        //{
+        //    var returnMsg = new StatusMessage();
+        //    var msgSB = new StringBuilder();
+
+        //    var datatypeService = this.Services.DataTypeService;
+
+        //    var datatypes = datatypeService.GetAll();
+
+        //    if (ForExport)
+        //    {
+        //        msgSB.AppendLine(" ");
+        //        msgSB.AppendLine(string.Format("{0}|{1}|{2}", "Name", "Property Editor Alias", "GUID"));
+        //    }
+        //    else
+        //    {
+        //        msgSB.AppendLine(string.Format("{0} [{1}] {2}", "Name", "Property Editor Alias", "GUID"));
+        //    }
+
+
+        //    foreach (var dt in datatypes)
+        //    {
+        //        if (ForExport)
+        //        {
+        //            msgSB.AppendLine(string.Format("{0}|{1}|{2}", dt.Name, dt.EditorAlias, dt.Key));
+        //        }
+        //        else
+        //        {
+        //            msgSB.AppendLine(string.Format("{0} [{1}] {2}", dt.Name, dt.EditorAlias, dt.Key));
+        //        }
+        //    }
+
+        //    returnMsg.Message = msgSB.ToString();
+        //    returnMsg.Success = true;
+        //    return returnMsg;
+        //}
 
 
         #endregion
@@ -444,7 +692,7 @@
 
         /// /Umbraco/backoffice/Api/SiteAuditorApi/GetAllDocTypesAsHtml
         [System.Web.Http.AcceptVerbs("GET")]
-        public HttpResponseMessage GetAllDocTypesAsHtml()
+        public HttpResponseMessage GetAllDocTypesAsHtmlTable()
         {
             var saService = GetSiteAuditorService();
             var returnSB = new StringBuilder();
@@ -457,6 +705,7 @@
                         <th>Doctype Name</th>
                         <th>Alias</th>
                         <th>Default Template</th>
+                        <th>Id</th>
                         <th>GUID</th>
                         <th>Create Date</th>
                         <th>Update Date</th>
@@ -473,6 +722,7 @@
                 tableData.AppendLine(string.Format("<td>{0}</td>", item.Name));
                 tableData.AppendLine(string.Format("<td>{0}</td>", item.Alias));
                 tableData.AppendLine(string.Format("<td>{0}</td>", item.DefaultTemplateName));
+                tableData.AppendLine(string.Format("<td>{0}</td>", item.Id));
                 tableData.AppendLine(string.Format("<td>{0}</td>", item.GUID));
                 tableData.AppendLine(string.Format("<td>{0}</td>", item.ContentType.CreateDate));
                 tableData.AppendLine(string.Format("<td>{0}</td>", item.ContentType.UpdateDate));
@@ -527,91 +777,7 @@
 
         #endregion
 
-        #region GetContentWithValues
-        /// /Umbraco/backoffice/Api/SiteAuditorApi/GetContentWithValues?PropertyAlias=xxx&IncludeUnpublished=false
-        [System.Web.Http.AcceptVerbs("GET")]
-        public HttpResponseMessage GetContentWithValues(string PropertyAlias, bool IncludeUnpublished = false)
-        {
-            var saService = GetSiteAuditorService();
-            var returnSB = new StringBuilder();
-            var fancyFormat = true;
-
-            var pvPath = "~/App_Plugins/Dragonfly.SiteAuditor/Views/ContentWithValuesTable.cshtml";
-
-            //FIND NODES TO DISPLAY
-            var allNodes = saService.GetAllNodes().ToList();
-            var nodesWithValue = allNodes.Where(n => n.Properties.Where(p=> p.Alias==PropertyAlias && p.HasValue()).Any()).ToList();
-
-            //VIEW DATA 
-            var viewData = new ViewDataDictionary();
-            viewData.Model = nodesWithValue;
-            viewData.Add("PropertyAlias", PropertyAlias);
-            viewData.Add("IncludeUnpublished", IncludeUnpublished);
-
-            //RENDER
-            var controllerContext = this.ControllerContext;
-            var displayHtml = ApiControllerHtmlHelper.GetPartialViewHtml(controllerContext, pvPath, viewData, HttpContext.Current);
-            returnSB.AppendLine(displayHtml);
-
-            return new HttpResponseMessage()
-            {
-                Content = new StringContent(
-                    returnSB.ToString(),
-                    Encoding.UTF8,
-                    "text/html"
-                )
-            };
-        }
-
-        /// /Umbraco/backoffice/Api/SiteAuditorApi/GetContentWithValues
-        [System.Web.Http.AcceptVerbs("GET")]
-        public HttpResponseMessage GetContentWithValues()
-        {
-            var saService = GetSiteAuditorService(); 
-            var returnSB = new StringBuilder();
-
-            //BUILD HTML
-            var allSiteDocTypes = saService.GetAllDocTypes();
-
-            var allProps = allSiteDocTypes.SelectMany(n => n.PropertyTypes);
-
-            var allPropsAliases = allProps.Select(n => n.Alias).Distinct();
-
-            //BUILD HTML
-            returnSB.AppendLine($"<h1>Get Content with Values</h1>");
-            returnSB.AppendLine($"<h3>Available Properties</h3>");
-            returnSB.AppendLine("<p>Note: Choosing the 'All' option will take significantly longer to load than the 'Published' option because we need to bypass the cache and query the database directly.</p>");
-
-            returnSB.AppendLine("<ul>");
-
-            foreach (var propAlias in allPropsAliases.OrderBy(n => n))
-            {
-                var url1 =
-                    $"/Umbraco/backoffice/Api/SiteAuditorApi/GetContentWithValues?PropertyAlias={propAlias}&IncludeUnpublished=false";
-                var url2 =
-                    $"/Umbraco/backoffice/Api/SiteAuditorApi/GetContentWithValues?PropertyAlias={propAlias}&IncludeUnpublished=true";
-
-                returnSB.AppendLine($"<li>{propAlias} <a target=\"_blank\" href=\"{url1}\">Published</a> | <a target=\"_blank\" href=\"{url2}\">All</a></li>");
-            }
-
-            returnSB.AppendLine("</ul>");
-
-            return new HttpResponseMessage()
-            {
-                Content = new StringContent(
-                    returnSB.ToString(),
-                    Encoding.UTF8,
-                    "text/html"
-                )
-            };
-        }
-
-        private SiteAuditorService GetSiteAuditorService()
-        {
-            return new SiteAuditorService(Umbraco, UmbracoContext, Services, Logger);
-        }
-
-        #endregion
+ 
 
         #region Tests & Examples
 

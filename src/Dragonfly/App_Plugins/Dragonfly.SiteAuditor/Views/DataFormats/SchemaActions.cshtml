@@ -1,0 +1,18 @@
+@using Dragonfly.UmbracoHelpers
+@model Int32
+@{
+    var entityId = Model;
+    var type = Mvc.GetSafeViewDataString(this.ViewData,"EntityType");
+
+    var url = "";
+    switch (type)
+    {
+        case "DataType":
+            url = string.Format("/umbraco/#/settings/dataTypes/edit/{0}", entityId);
+            break;
+    }
+    
+}
+
+<a href="@url" target="_blank">Edit</a>
+

@@ -8,6 +8,7 @@
     using Newtonsoft.Json;
     using Umbraco.Core;
     using Umbraco.Core.Cache;
+    using Umbraco.Core.Composing.CompositionExtensions;
     using Umbraco.Core.Logging;
     using Umbraco.Core.Models;
     using Umbraco.Core.Models.PublishedContent;
@@ -15,6 +16,7 @@
     using Umbraco.Web;
     using Umbraco.Web.Composing;
     using Umbraco.Web.PropertyEditors;
+    using Umbraco.Web.Security;
 
     public class SiteAuditorService
     {
@@ -23,8 +25,6 @@
         //private readonly AppCaches _appCaches;
         private readonly UmbracoContext _umbracoContext;
         private readonly ServiceContext _services;
-
-
 
         #region ctor
         public SiteAuditorService()
@@ -270,7 +270,6 @@
 
         #endregion
 
-
         #region DocTypes
 
         /// <summary>
@@ -496,8 +495,77 @@
 
         #endregion
 
+        #region AuditableDataTypes
+
+        public IEnumerable<AuditableDataType> AllDataTypes()
+        {
+            var list = new List<AuditableDataType>();
+            var datatypes = _services.DataTypeService.GetAll();
+
+            var properties = PropsWithDocTypes();
 
 
+            foreach (var dt in datatypes)
+            {
+                var adt = new AuditableDataType();
+                adt.Name = dt.Name;
+                adt.EditorAlias = dt.EditorAlias;
+                adt.Guid = dt.Key;
+                adt.Id = dt.Id;
+                adt.FolderPath = GetFolderContainerPath(dt);
+
+                var matchingProps = properties.Where(p => p.Key.DataTypeId == dt.Id);
+                adt.UsedOnProperties = matchingProps;
+
+                list.Add(adt);
+            }
+
+            return list;
+        }
+
+        private List<string> GetFolderContainerPath(IDataType DataType)
+        {
+            var folders = new List<string>();
+            var ids = DataType.Path.Split(',');
+
+            try
+            {
+                //The final one is the DataType, so exclude it
+                foreach (var sId in ids.Take(ids.Length - 1))
+                {
+                    if (sId != "-1")
+                    {
+                        var container = _services.DataTypeService.GetContainer(Convert.ToInt32(sId));
+                        folders.Add(container.Name);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                folders.Add("~ERROR~");
+                var msg = $"Error in 'GetFolderContainerPath()' for DataType {DataType.Id} - '{DataType.Name}'";
+                _logger.Error(typeof(SiteAuditorService),e, msg);
+            }
+
+            return folders;
+        }
+
+        #endregion
+
+        private Dictionary<PropertyType, string> PropsWithDocTypes()
+        {
+            var properties = new Dictionary<PropertyType, string>();
+            var docTypes = _services.ContentTypeService.GetAll();
+            foreach (var doc in docTypes)
+            {
+                foreach (var prop in doc.PropertyTypes)
+                {
+                    properties.Add(prop, doc.Alias);
+                }
+            }
+
+            return properties;
+        }
 
     }
 }
