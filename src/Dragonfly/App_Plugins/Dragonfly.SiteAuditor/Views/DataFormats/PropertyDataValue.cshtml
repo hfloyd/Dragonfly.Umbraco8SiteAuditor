@@ -1,83 +1,110 @@
+@using System.Web;
+@using System.Web.Mvc;
+@using Umbraco.Core.Models;
+@using Umbraco.Core.Models.PublishedContent;
+@using Dragonfly.SiteAuditor.Models;
 
-@model Dragonfly.SiteAuditor.Models.NodePropertyDataTypeInfo
+@model NodePropertyDataTypeInfo
 
 @{
+    NodePropertyDataTypeInfo nodePropertyDataTypeInfo = Model;
     IHtmlString formattedValue = new HtmlString("");
     var renderingDone = false;
 
-    var editor = Model.DataType.PropertyEditorAlias;
-    var dbType = Model.DataType.DatabaseType;
+    var editor = nodePropertyDataTypeInfo.DataType.EditorAlias;
+    var dbType = nodePropertyDataTypeInfo.DataType.DatabaseType;
 
     //Special handling based on editor
     switch (editor)
     {
         case "Umbraco.NestedContent":
-            Html.RenderPartial("/App_Plugins/Dragonfly.SiteAuditor/Views/DataFormats/NestedContent.cshtml", Model.Property);
+            Html.RenderPartial("/App_Plugins/Dragonfly.SiteAuditor/Views/DataFormats/NestedContent.cshtml", nodePropertyDataTypeInfo.Property);
             renderingDone = true;
             break;
 
         case "Our.Umbraco.NestedContent":
-            Html.RenderPartial("/App_Plugins/Dragonfly.SiteAuditor/Views/DataFormats/NestedContent.cshtml", Model.Property);
+            Html.RenderPartial("/App_Plugins/Dragonfly.SiteAuditor/Views/DataFormats/NestedContent.cshtml", nodePropertyDataTypeInfo.Property);
             renderingDone = true;
             break;
 
-        case "Umbraco.MultiNodeTreePicker2":
-            Html.RenderPartial("/App_Plugins/Dragonfly.SiteAuditor/Views/DataFormats/Mntp.cshtml", Model.Property);
+        case "Umbraco.MultiNodeTreePicker":
+            Html.RenderPartial("/App_Plugins/Dragonfly.SiteAuditor/Views/DataFormats/Mntp.cshtml", nodePropertyDataTypeInfo.Property);
             renderingDone = true;
             break;
 
-        case "Umbraco.ContentPicker2":
-            Html.RenderPartial("/App_Plugins/Dragonfly.SiteAuditor/Views/DataFormats/ContentPicker.cshtml", Model.Property);
+        case "Umbraco.ContentPicker":
+            Html.RenderPartial("/App_Plugins/Dragonfly.SiteAuditor/Views/DataFormats/ContentPicker.cshtml", nodePropertyDataTypeInfo.Property);
             renderingDone = true;
             break;
 
         case "Tags":
-            Html.RenderPartial("/App_Plugins/Dragonfly.SiteAuditor/Views/DataFormats/Tags.cshtml", Model.Property);
+            Html.RenderPartial("/App_Plugins/Dragonfly.SiteAuditor/Views/DataFormats/Tags.cshtml", nodePropertyDataTypeInfo.Property);
+            renderingDone = true;
+            break;
+
+        case "Umbraco.MediaPicker":
+            var mediaImageVdd = new ViewDataDictionary();
+            mediaImageVdd.Add("ImageWidth", 300);
+
+            Html.RenderPartial("/App_Plugins/Dragonfly.SiteAuditor/Views/DataFormats/MediaIPub.cshtml", nodePropertyDataTypeInfo.Property.GetValue(), mediaImageVdd);
+            <div><small>[@nodePropertyDataTypeInfo.Property.GetValue().ToString()]</small></div>
             renderingDone = true;
             break;
 
         case "Umbraco.MediaPicker2":
-            var mediaImageVdd = new ViewDataDictionary();
-            mediaImageVdd.Add("ImageWidth", 300);
+            var mediaImageVdd2 = new ViewDataDictionary();
+            mediaImageVdd2.Add("ImageWidth", 300);
 
-            Html.RenderPartial("/App_Plugins/Dragonfly.SiteAuditor/Views/DataFormats/MediaImage.cshtml", Model.Property, mediaImageVdd);
+            Html.RenderPartial("/App_Plugins/Dragonfly.SiteAuditor/Views/DataFormats/MediaIPub.cshtml", nodePropertyDataTypeInfo.Property.GetValue(), mediaImageVdd2);
+            <div><small>[@nodePropertyDataTypeInfo.Property.GetValue().ToString()]</small></div>
+
+            renderingDone = true;
+            break;
+
+        case "Umbraco.MediaPicker3":
+            var mediaImageVdd3 = new ViewDataDictionary();
+            mediaImageVdd3.Add("ImageWidth", 300);
+
+            Html.RenderPartial("/App_Plugins/Dragonfly.SiteAuditor/Views/DataFormats/MediaWithCrops.cshtml", nodePropertyDataTypeInfo.Property.GetValue(), mediaImageVdd3);
+            <div><small>[@nodePropertyDataTypeInfo.Property.GetValue().ToString()]</small></div>
+
             renderingDone = true;
             break;
 
     }
 
     //If we get here, handle based on DB type
-    switch (dbType)
-    {
-        case DataTypeDatabaseType.Date:
-            Html.RenderPartial("/App_Plugins/Dragonfly.SiteAuditor/Views/DataFormats/DateValue.cshtml", Model.Property.GetValue<DateTime>());
-            renderingDone = true;
-            break;
-
-        case DataTypeDatabaseType.Decimal:
-            formattedValue = new HtmlString(Model.Property.GetValue<string>());
-            break;
-
-        case DataTypeDatabaseType.Integer:
-            formattedValue = new HtmlString(Model.Property.GetValue<string>());
-            break;
-
-        case DataTypeDatabaseType.Nvarchar:
-            formattedValue = new HtmlString(Model.Property.GetValue<string>());
-            break;
-
-        case DataTypeDatabaseType.Ntext:
-            formattedValue = new HtmlString(Model.Property.GetValue<string>());
-            break;
-
-        default:
-            //If we get here, who knows what happened, just use string
-            formattedValue = new HtmlString(Model.Property.GetValue<string>());
-            break;
-    }
-
     if (!renderingDone)
     {
-        <span>@formattedValue</span>
+        switch (dbType)
+        {
+            case ValueStorageType.Date:
+                Html.RenderPartial("/App_Plugins/Dragonfly.SiteAuditor/Views/DataFormats/DateValue.cshtml", nodePropertyDataTypeInfo.Property.GetValue());
+                renderingDone = true;
+                break;
+
+            //case ValueStorageType.Decimal:
+            //    formattedValue = new HtmlString(nodePropertyDataTypeInfo.Property.GetValue().ToString());
+            //    break;
+
+            //case ValueStorageType.Integer:
+            //    formattedValue = new HtmlString(nodePropertyDataTypeInfo.Property.GetValue().ToString());
+            //    break;
+
+            //case ValueStorageType.Nvarchar:
+            //    formattedValue = new HtmlString(nodePropertyDataTypeInfo.Property.GetValue().ToString());
+            //    break;
+
+            //case ValueStorageType.Ntext:
+            //    formattedValue = new HtmlString(nodePropertyDataTypeInfo.Property.GetValue().ToString());
+            //    break;
+
+            default:
+                //Default rendering
+                <span>@nodePropertyDataTypeInfo.Property.GetValue()</span>
+                renderingDone = true;
+                break;
+        }
+
     }
 }

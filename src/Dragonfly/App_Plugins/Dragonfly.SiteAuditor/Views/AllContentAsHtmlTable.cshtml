@@ -1,12 +1,14 @@
-@using System.Web.Mvc.Html
-@using Dragonfly.SiteAuditor.Helpers
-@using Umbraco.Core.Composing
-@using Umbraco.Web
+@using System.Web.Mvc.Html;
+@using Dragonfly.SiteAuditor.Helpers;
+@using Dragonfly.SiteAuditor.Models;
+@using Umbraco.Core.Composing;
+@using Umbraco.Web;
+@using Umbraco.Core.Models.PublishedContent;
 
-@model IEnumerable<Dragonfly.SiteAuditor.Models.AuditableContent>
+@model IEnumerable<AuditableContent>
 
 @{
-    IEnumerable<Dragonfly.SiteAuditor.Models.AuditableContent> contentList = Model.ToList();
+    IEnumerable<AuditableContent> contentList = Model.ToList();
 
     var fancyFormat = true;
     var propertyAlias = Dragonfly.UmbracoHelpers.Mvc.GetSafeViewDataString(ViewData, "PropertyAlias");
@@ -29,7 +31,7 @@
     @*<!--<script src="/scripts/snippet-javascript-console.min.js?v=1"></script>-->*@
 </head>
 <body>
-    <div class="container">
+    <div class="container-full" style="margin: 0 10px;">
         @if (fancyFormat)
         {
             <h1>All Content</h1>
@@ -51,7 +53,7 @@
                     <th>Full URL</th>
                     <th>Level</th>
                     <th>Sort Order</th>
-                    <th>Template Name</th>
+                    <th>Assigned Template</th>
                     <th>Create Date</th>
                     <th>Update Date</th>
                 </tr>
@@ -60,7 +62,7 @@
                 @foreach (var node in contentList)
                 {
                     counter++;
-                    var dtInfo = AuditHelper.GetPropertyDataTypeInfo(Current.Services, propertyAlias, node.UmbPublishedNode);
+                    //var dtInfo = AuditHelper.GetPropertyDataTypeInfo(Current.Services, propertyAlias, node.UmbPublishedNode);
 
                     <tr>
                         @if (fancyFormat)
@@ -70,32 +72,55 @@
 
                             //Actions
                             <td>
-                                @{ Html.RenderPartial("/App_Plugins/Dragonfly.SiteAuditor/Views/DataFormats/NodeActions.cshtml", node.UmbPublishedNode); }
+                                @try
+                                {
+                                    Html.RenderPartial("/App_Plugins/Dragonfly.SiteAuditor/Views/DataFormats/NodeActions.cshtml", node);
+                                }
+                                catch (Exception e)
+                                {
+                                <span>Error on Node # @node.UmbContentNode.Id : @e.Message</span>
+                                }
                             </td>
                         }
 
-                        @*//DocType*@
-                        <td>@{Html.RenderPartial("/App_Plugins/Dragonfly.SiteAuditor/Views/DataFormats/DocTypeInfo.cshtml", dtInfo);}</td>
-
-                        @*//PropertyAlias Type*@
-                        <td>@{Html.RenderPartial("/App_Plugins/Dragonfly.SiteAuditor/Views/DataFormats/PropertyTypeInfo.cshtml", dtInfo);}</td>
-
-                        @*//Node ID*@
-                        <td>@node.UmbContentNode.Id</td>
-
-                        @*//Node Name*@
+                        @* //Node Name*@
                         <td>@node.UmbContentNode.Name</td>
 
-                        @*//PropertyAlias Value*@
-                        @if (dtInfo.DataType != null)
-                        {
-                            <td>@{ Html.RenderPartial("/App_Plugins/Dragonfly.SiteAuditor/Views/DataFormats/PropertyDataValue.cshtml", dtInfo);}</td>
-                        }
-                        else
-                        {
-                            var propVal = node.UmbPublishedNode.Value<string>(propertyAlias);
-                            <td>@propVal</td>
-                        }
+                        @* //NodeID*@
+                        <td>@node.UmbContentNode.Id</td>
+
+                        @* //Node Path*@
+                        <td>@node.NodePathAsText</td>
+
+                        @* //DocType*@
+                        <td>@node.UmbContentNode.ContentType.Alias</td>
+
+                        @* //ParentID*@
+                        <td>@node.UmbContentNode.ParentId</td>
+
+                        @* //Full URL*@
+                        <td>
+                            @if (node.IsPublished)
+                            {
+                                <a href="@node.FullNiceUrl" target="_blank">@node.FullNiceUrl</a>
+                            }
+                            else
+                            {
+                                <strong>UNPUBLISHED</strong>
+                            }
+                        </td>
+
+                        @* //Level*@
+                        <td>@node.UmbContentNode.Level</td>
+
+                        @* //Sort Order*@
+                        <td>@node.UmbContentNode.SortOrder</td>
+
+                        @* //Template Name*@
+                        <td>@node.TemplateAlias</td>
+
+                        @* //Create Date*@
+                        <td>@{ Html.RenderPartial("/App_Plugins/Dragonfly.SiteAuditor/Views/DataFormats/DateValue.cshtml", node.UmbContentNode.CreateDate);}</td>
 
                         @*//Date Last Updated*@
                         <td>@{ Html.RenderPartial("/App_Plugins/Dragonfly.SiteAuditor/Views/DataFormats/DateValue.cshtml", node.UmbContentNode.UpdateDate);}</td>

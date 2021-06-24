@@ -1,5 +1,8 @@
-@using Dragonfly.SiteAuditor.Helpers
-@using Umbraco.Web.Composing
+@using Dragonfly.SiteAuditor.Helpers;
+@using Umbraco.Web.Composing;
+@using Umbraco.Web;
+@using Umbraco.Core.Models.PublishedContent;
+
 @model IEnumerable<IPublishedContent>
 
 @{
@@ -39,10 +42,11 @@
                         <th>Actions</th>
                     }
                     <th>DocType</th>
-                    <th>"@propertyAlias" Type</th>
+                    <th>"@propertyAlias" Data Type</th>
                     <th>Node ID</th>
                     <th>Node Name</th>
                     <th>"@propertyAlias" Value</th>
+                   @* <th>Value Model Type</th>*@
                     <th>Date Last Updated</th>
                 </tr>
             </thead>
@@ -52,45 +56,48 @@
                     counter++;
                     var dtInfo = AuditHelper.GetPropertyDataTypeInfo(Current.Services, propertyAlias, node);
 
-                    <tr>
-                        @if (fancyFormat)
-                        {
-                            // #
-                            <td>@counter</td>
+                <tr>
+                    @if (fancyFormat)
+                    {
+                        // #
+                        <td>@counter</td>
 
-                            //Actions
-                            <td>
-                                @{ Html.RenderPartial("/App_Plugins/Dragonfly.SiteAuditor/Views/DataFormats/NodeActions.cshtml", node); }
-                            </td>
-                        }
+                        //Actions
+                        <td>
+                            @{ Html.RenderPartial("/App_Plugins/Dragonfly.SiteAuditor/Views/DataFormats/NodeActions.cshtml", node); }
+                        </td>
+                    }
 
-                        @*//DocType*@
-                        <td>@{Html.RenderPartial("/App_Plugins/Dragonfly.SiteAuditor/Views/DataFormats/DocTypeInfo.cshtml", dtInfo);}</td>
+                    @*//DocType*@
+                    <td>@{Html.RenderPartial("/App_Plugins/Dragonfly.SiteAuditor/Views/DataFormats/DocTypeInfo.cshtml", dtInfo);}</td>
 
-                        @*//PropertyAlias Type*@
-                        <td>@{Html.RenderPartial("/App_Plugins/Dragonfly.SiteAuditor/Views/DataFormats/PropertyTypeInfo.cshtml", dtInfo);}</td>
+                    @*//PropertyAlias Type*@
+                    <td>@{Html.RenderPartial("/App_Plugins/Dragonfly.SiteAuditor/Views/DataFormats/PropertyTypeInfo.cshtml", dtInfo);}</td>
 
-                        @*//Node ID*@
-                        <td>@node.Id</td>
+                    @*//Node ID*@
+                    <td>@node.Id</td>
 
-                        @*//Node Name*@
-                        <td>@node.Name</td>
+                    @*//Node Name*@
+                    <td>@node.Name</td>
 
-                        @*//PropertyAlias Value*@
-                        @if (dtInfo.DataType != null)
-                        {
-                            <td>@{ Html.RenderPartial("/App_Plugins/Dragonfly.SiteAuditor/Views/DataFormats/PropertyDataValue.cshtml", dtInfo);}</td>
-                        }
-                        else
-                        {
-                            var propVal = node.Value<string>(propertyAlias);
-                            <td>@propVal</td>
-                        }
+                    @*//PropertyAlias Value*@
+                    @if (dtInfo.DataType != null)
+                    {
+                        <td>@{ Html.RenderPartial("/App_Plugins/Dragonfly.SiteAuditor/Views/DataFormats/PropertyDataValue.cshtml", dtInfo);}</td>
+                    }
+                    else
+                    {
+                        var propVal = node.Value<string>(propertyAlias);
+                        <td>@propVal</td>
+                    }
 
-                        @*//Date Last Updated*@
-                        <td>@{ Html.RenderPartial("/App_Plugins/Dragonfly.SiteAuditor/Views/DataFormats/DateValue.cshtml", node.UpdateDate);}</td>
+                    @*//Value Model Type
+        <td>@dtInfo.Property.GetValue().GetType().ToString()</td>*@
 
-                    </tr>
+                    @*//Date Last Updated*@
+                    <td>@{ Html.RenderPartial("/App_Plugins/Dragonfly.SiteAuditor/Views/DataFormats/DateValue.cshtml", node.UpdateDate);}</td>
+
+                </tr>
                 }
 
             </tbody>

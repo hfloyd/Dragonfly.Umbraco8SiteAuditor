@@ -1,0 +1,43 @@
+@using System.Web;
+@using System.Web.Mvc;
+@using Umbraco.Core.Models;
+@using Umbraco.Core.Models.PublishedContent;
+@using Dragonfly.SiteAuditor.Models;
+@using Umbraco.Web;
+@using Dragonfly.UmbracoHelpers;
+@using ImageProcessor.Imaging.Formats;
+@using Umbraco.Web.Composing
+
+@model MediaWithCrops
+
+@{
+    //IPublishedProperty property = Model;
+    MediaWithCrops media = Model;
+    //var fancyFormat = Mvc.GetSafeViewDataBool(ViewData, "FancyFormat", true);
+    //var imageWidth = Mvc.GetSafeViewDataInt(ViewData, "ImageWidth", 300);
+    //var umbracoHelper = Current.UmbracoHelper;
+   
+    IPublishedContent iPubMedia = (IPublishedContent)media.MediaItem;
+    Html.RenderPartial("/App_Plugins/Dragonfly.SiteAuditor/Views/DataFormats/MediaIPub.cshtml", iPubMedia, ViewData);
+}
+@functions
+{
+    bool IsImage(IPublishedContent IPub)
+    {
+        var imgTypes = new List<string>()
+    {
+            {".png"}
+            ,{".jpg"}
+            ,{".jpeg"}
+            ,{".gif"}
+            ,{".svg"}
+        };
+
+        var extension = IPub.Value<string>("umbracoExtension");
+        if (imgTypes.Contains(extension))
+        { return true; }
+
+        return false;
+    }
+}
+

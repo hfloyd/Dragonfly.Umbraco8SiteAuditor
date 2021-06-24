@@ -84,7 +84,7 @@
             returnSB.AppendLine("</ul>");
 
 
-           
+
             //returnSB.AppendLine("<h3>All Content Nodes</h3>");
             //returnSB.AppendLine("<p>Note</p>");
             //returnSB.AppendLine("<ul>");
@@ -105,7 +105,7 @@
         {
             return new SiteAuditorService(Umbraco, UmbracoContext, Services, Logger);
         }
-        
+
         #region Content Nodes
 
         /// /Umbraco/backoffice/Api/SiteAuditorApi/GetAllContentAsXml
@@ -149,58 +149,13 @@
             var saService = GetSiteAuditorService();
 
             var pvPath = "/App_Plugins/Dragonfly.SiteAuditor/Views/AllContentAsHtmlTable.cshtml"; // _TesterConfig.GetAppPluginsPath() + "Views/Start.cshtml";
-            
+
             var allNodes = saService.GetContentNodes();
 
-            //var tableStart = @"
-            //    <table>
-            //        <tr>
-            //            <th>Node Name</th>
-            //            <th>NodeID</th>
-            //            <th>Node Path</th>
-            //            <th>DocType</th>
-            //            <th>ParentID</th>
-            //            <th>Full URL</th>
-            //            <th>Level</th>
-            //            <th>Sort Order</th>
-            //            <th>Template Name</th>
-            //            <th>Create Date</th>
-            //            <th>Update Date</th>
-            //        </tr>";
-
-            //var tableEnd = @"</table>";
-
-            //var tableData = new StringBuilder();
-
-            //foreach (var auditNode in allNodes)
-            //{
-            //    tableData.AppendLine("<tr>");
-
-            //    tableData.AppendLine(string.Format("<td>{0}</td>", auditNode.UmbContentNode.Name));
-            //    tableData.AppendLine(string.Format("<td>{0}</td>", auditNode.UmbContentNode.Id));
-            //    tableData.AppendLine(string.Format("<td>{0}</td>", auditNode.NodePathAsText));
-            //    tableData.AppendLine(string.Format("<td>{0}</td>", auditNode.UmbContentNode.ContentType.Alias));
-            //    tableData.AppendLine(string.Format("<td>{0}</td>", auditNode.UmbContentNode.ParentId));
-            //    tableData.AppendLine(string.Format("<td><a href=\"{0}\" target=\"_blank\">{0}</a></td>", auditNode.FullNiceUrl));
-            //    tableData.AppendLine(string.Format("<td>{0}</td>", auditNode.UmbContentNode.Level));
-            //    tableData.AppendLine(string.Format("<td>{0}</td>", auditNode.UmbContentNode.SortOrder));
-            //    tableData.AppendLine(string.Format("<td>{0}</td>", auditNode.TemplateAlias));
-            //    tableData.AppendLine(string.Format("<td>{0}</td>", auditNode.UmbContentNode.CreateDate));
-            //    tableData.AppendLine(string.Format("<td>{0}</td>", auditNode.UmbContentNode.UpdateDate));
-
-            //    tableData.AppendLine("</tr>");
-            //}
-
-            //returnSB.AppendLine(tableStart);
-            //returnSB.Append(tableData);
-            //returnSB.AppendLine(tableEnd);
             //VIEW DATA 
             var viewData = new ViewDataDictionary();
             viewData.Model = allNodes;
-            //viewData.Add("FilesList", dataTypes);
             //viewData.Add("SpecialMessage", specialMessage);
-            //viewData.Add("SpecialMessageClass", specialMessageClass);
-            //viewData.Add("DeleteOptions", FilesIO.GetFilesOptions());
 
             //RENDER
             try
@@ -539,13 +494,11 @@
 
             var dataTypes = saService.AllDataTypes();
 
-           //VIEW DATA 
+            //VIEW DATA 
             var viewData = new ViewDataDictionary();
             viewData.Model = dataTypes;
-            //viewData.Add("FilesList", dataTypes);
             //viewData.Add("SpecialMessage", specialMessage);
-            //viewData.Add("SpecialMessageClass", specialMessageClass);
-            //viewData.Add("DeleteOptions", FilesIO.GetFilesOptions());
+
 
             //RENDER
             try
@@ -559,14 +512,14 @@
             {
                 if (eNull.Message.Contains("Parameter name: view"))
                 {
-                    throw new ArgumentNullException($"The View file '{pvPath}' is missing and cannot be rendered.",eNull);
+                    throw new ArgumentNullException($"The View file '{pvPath}' is missing and cannot be rendered.", eNull);
                 }
                 else
                 {
                     throw;
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             { throw; }
 
             //RETURN AS HTML
@@ -777,7 +730,7 @@
 
         #endregion
 
- 
+
 
         #region Tests & Examples
 

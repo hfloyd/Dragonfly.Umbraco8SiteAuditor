@@ -1,8 +1,14 @@
-@model Umbraco.Core.Models.IPublishedContent
-    
-<a href="/umbraco#/content/content/edit/@Model.Id" target="_blank">Edit</a>
+@using Umbraco.Core.Models.PublishedContent
+@using Dragonfly.SiteAuditor.Models
 
-@if (Model.Url != "")
+@model AuditableContent
+@{
+    AuditableContent content = Model;
+}
+
+<a href="/umbraco#/content/content/edit/@content.UmbContentNode.Id" target="_blank">Edit</a>
+
+@if (content.IsPublished)
 {
-    <span> | </span><a href="@Model.Url" target="_blank">View</a>
+    <span> | </span><a href="@content.UmbPublishedNode.Url()" target="_blank">View</a>
 }

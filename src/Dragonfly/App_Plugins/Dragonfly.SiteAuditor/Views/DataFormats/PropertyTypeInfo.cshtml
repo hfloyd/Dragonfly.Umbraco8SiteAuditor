@@ -1,5 +1,8 @@
+@using Dragonfly.SiteAuditor.Models;
 
-@model Dragonfly.SiteAuditor.Models.NodePropertyDataTypeInfo
-    
-<span>@Model.DataType.Name (@Model.PropertyEditorAlias [@Model.DatabaseType])</span>
+@model NodePropertyDataTypeInfo
+@{
+    NodePropertyDataTypeInfo propInfo = Model;
+}
+<span>@propInfo.DataType.Name (@propInfo.PropertyEditorAlias [@propInfo.DatabaseType])</span>
 

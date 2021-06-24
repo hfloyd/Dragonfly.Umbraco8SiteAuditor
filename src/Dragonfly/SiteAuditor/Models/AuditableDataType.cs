@@ -15,6 +15,7 @@ namespace Dragonfly.SiteAuditor.Models
         public Guid Guid { get; set; }
         public int Id { get; set; }
         public IEnumerable<KeyValuePair<PropertyType, string>> UsedOnProperties { get; set; }
+        public string ConfigurationJson { get; set; }
         public List<string> FolderPath { get; set; }
 
         /// <summary>
@@ -40,6 +41,6 @@ namespace Dragonfly.SiteAuditor.Models
             }
         }
 
-      
+   
     }
 }

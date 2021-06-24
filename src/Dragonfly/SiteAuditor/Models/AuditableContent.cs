@@ -31,81 +31,36 @@
         /// </returns>
         public IEnumerable<string> NodePath { get; internal set; }
 
-        /// <summary>
-        /// Default string used for NodePathAsText
-        /// ' » ' unless explicitly changed
-        /// </summary>
-        public string DefaultDelimiter
-        {
-            get { return _defaultDelimiter; }
-            internal set { _defaultDelimiter = value; }
-        }
-        private string _defaultDelimiter = " » ";
 
         /// <summary>
         /// Full path to node in a single delimited string using object's default delimiter
         /// </summary>
-        public string NodePathAsText
-        {
-            get
-            {
-                var nodePath = string.Join(this.DefaultDelimiter, this.NodePath);
-                return nodePath;
-            }
-        }
+        public string NodePathAsText { get; internal set; }
+       
 
         /// <summary>
         /// Alias of the Template assigned to this Content Node. Returns "NONE" if there is no template.
         /// </summary>
-        public string TemplateAlias { get; set; } = "Unknown";
-
+        public string TemplateAlias { get; internal set; }
 
         /// <summary>
         /// Url with domain name. Returns "UNPUBLISHED" if there is no public url.
         /// </summary>
-        public string FullNiceUrl
-        {
-            get
-            {
-                string niceUrl;
-
-                if (this.UmbContentNode.Published & this.UmbPublishedNode != null)
-                {
-                    niceUrl = this.UmbPublishedNode.Url(mode: UrlMode.Absolute);
-                }
-                else
-                {
-                    niceUrl = "UNPUBLISHED";
-                }
-
-                return niceUrl;
-            }
-        }
-
+        public string FullNiceUrl { get; internal set; }
+       
+        public bool IsPublished { get; internal set; }
+        
         /// <summary>
         /// Path-only Url. Returns "UNPUBLISHED" if there is no public url.
         /// </summary>
-        public string RelativeNiceUrl
-        {
-            get
-            {
-                string niceUrl;
-
-                if (this.UmbContentNode.Published)
-                {
-
-                    niceUrl = this.UmbPublishedNode.Url(mode: UrlMode.Relative);
-                }
-                else
-                {
-                    niceUrl = "UNPUBLISHED";
-                }
-
-                return niceUrl;
-            }
-        }
-
+        public string RelativeNiceUrl { get; internal set; }
+        
         #endregion
+
+        public AuditableContent()
+        {
+            
+        }
 
         #region Methods
 

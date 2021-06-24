@@ -26,6 +26,17 @@
         private readonly UmbracoContext _umbracoContext;
         private readonly ServiceContext _services;
 
+        /// <summary>
+        /// Default string used for NodePathAsText
+        /// ' » ' unless explicitly changed
+        /// </summary>
+        public string DefaultDelimiter
+        {
+            get { return _defaultDelimiter; }
+            internal set { _defaultDelimiter = value; }
+        }
+        private string _defaultDelimiter = " » ";
+
         #region ctor
         public SiteAuditorService()
         {
@@ -226,20 +237,37 @@
         {
             var ac = new AuditableContent();
             ac.UmbContentNode = ThisIContent;
+            ac.IsPublished = ac.UmbContentNode.Published;
+
+            if (ThisIContent.TemplateId != null)
+            {
+                var template = _services.FileService.GetTemplate((int)ThisIContent.TemplateId);
+                ac.TemplateAlias = template.Alias;
+            }
+            else
+            {
+                ac.TemplateAlias = "NONE";
+            }
+
+
             try
             {
                 var iPub = _umbracoHelper.Content(ThisIContent.Id);
                 ac.UmbPublishedNode = iPub;
+                ac.RelativeNiceUrl = iPub.Url(mode: UrlMode.Relative);
+                ac.FullNiceUrl = iPub.Url(mode: UrlMode.Absolute);
             }
             catch (Exception e)
             {
                 //Get preview - unpublished
                 var iPub = _umbracoContext.Content.GetById(true, ThisIContent.Id);
                 ac.UmbPublishedNode = iPub;
+                ac.RelativeNiceUrl = iPub != null ? iPub.Url(mode: UrlMode.Relative) : "UNPUBLISHED";
+                ac.FullNiceUrl = iPub != null ? iPub.Url(mode: UrlMode.Absolute) : "UNPUBLISHED";
             }
 
             ac.NodePath = AuditHelper.NodePath(ThisIContent);
-            //this.DocTypes = new List<string>();
+            ac.NodePathAsText = string.Join(this.DefaultDelimiter, ac.NodePath);
 
             return ac;
         }
@@ -513,6 +541,7 @@
                 adt.Guid = dt.Key;
                 adt.Id = dt.Id;
                 adt.FolderPath = GetFolderContainerPath(dt);
+                adt.ConfigurationJson = JsonConvert.SerializeObject(dt.Configuration);
 
                 var matchingProps = properties.Where(p => p.Key.DataTypeId == dt.Id);
                 adt.UsedOnProperties = matchingProps;
@@ -544,7 +573,7 @@
             {
                 folders.Add("~ERROR~");
                 var msg = $"Error in 'GetFolderContainerPath()' for DataType {DataType.Id} - '{DataType.Name}'";
-                _logger.Error(typeof(SiteAuditorService),e, msg);
+                _logger.Error(typeof(SiteAuditorService), e, msg);
             }
 
             return folders;
