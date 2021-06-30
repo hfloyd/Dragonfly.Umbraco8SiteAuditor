@@ -43,6 +43,6 @@
   <Import Project="..\Custom.targets" />
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="XCOPY /s /y &quot;$(TargetDir)$(TargetName).*&quot; &quot;C:\Users\Heather\NAS Folders\Active Projects\Webs\Clients\GHXL\sourcecode\Ghx.Web\bin&quot;&#xD;&#xA;&#xD;&#xA;XCOPY /s /y /i &quot;$(ProjectDir)App_Plugins\*&quot; &quot;C:\Users\Heather\NAS Folders\Active Projects\Webs\Clients\GHXL\sourcecode\Ghx.Web\App_Plugins&quot;&#xD;&#xA;" />
+    <Exec Command="XCOPY /s /y &quot;$(TargetDir)$(TargetName).*&quot; &quot;C:\Users\Heather\NAS Folders\Active Projects\Webs\Clients\GHXL\sourcecode\Ghx.Web\bin&quot;&#xD;&#xA;XCOPY /s /y /i &quot;$(ProjectDir)App_Plugins\*&quot; &quot;C:\Users\Heather\NAS Folders\Active Projects\Webs\Clients\GHXL\sourcecode\Ghx.Web\App_Plugins&quot;&#xD;&#xA;&#xD;&#xA;XCOPY /s /y &quot;$(TargetDir)$(TargetName).*&quot; &quot;C:\Users\Heather\NAS Folders\Active Projects\Webs\Clients\GHXL\sourcecode-GHXV7\UmbracoCms.8.14.0\bin&quot;&#xD;&#xA;XCOPY /s /y /i &quot;$(ProjectDir)App_Plugins\*&quot; &quot;C:\Users\Heather\NAS Folders\Active Projects\Webs\Clients\GHXL\sourcecode-GHXV7\UmbracoCms.8.14.0\App_Plugins&quot;&#xD;&#xA;&#xD;&#xA;" />
   </Target>
 </Project>

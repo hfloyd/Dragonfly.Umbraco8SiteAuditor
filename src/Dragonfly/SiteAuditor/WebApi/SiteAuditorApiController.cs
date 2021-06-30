@@ -352,44 +352,39 @@
             var saService = GetSiteAuditorService();
             var returnSB = new StringBuilder();
 
+            var pvPath = "/App_Plugins/Dragonfly.SiteAuditor/Views/AllPropertiesAsHtmlTable.cshtml"; // _TesterConfig.GetAppPluginsPath() + "Views/Start.cshtml";
+
             var siteProps = saService.AllProperties();
             var propertiesList = siteProps.AllProperties;
 
-            var tableStart = @"
-                <table>
-                    <tr>
-                        <th>Property Name</th>
-                        <th>Property Alias</th>
-                        <th>DataType Name</th>
-                        <th>DataType Property Editor</th>
-                        <th>DataType Database Type</th>
-                        <th>DocumentTypes Used In</th>
-                        <th>Qty of DocumentTypes</th>
-                    </tr>";
+            //VIEW DATA 
+            var viewData = new ViewDataDictionary();
+            viewData.Model = propertiesList;
+            //viewData.Add("SpecialMessage", specialMessage);
 
-            var tableEnd = @"</table>";
-
-            var tableData = new StringBuilder();
-
-            foreach (var prop in propertiesList)
+            //RENDER
+            try
             {
-                tableData.AppendLine("<tr>");
-
-                tableData.AppendLine(string.Format("<td>{0}</td>", prop.UmbPropertyType.Name));
-                tableData.AppendLine(string.Format("<td>{0}</td>", prop.UmbPropertyType.Alias));
-                tableData.AppendLine(string.Format("<td>{0}</td>", prop.DataType.Name));
-                tableData.AppendLine(string.Format("<td>{0}</td>", prop.DataType.EditorAlias));
-                tableData.AppendLine(string.Format("<td>{0}</td>", prop.DataType.DatabaseType));
-                tableData.AppendLine(string.Format("<td>{0}</td>", string.Join(", ", prop.AllDocTypes.Select(n => n.DocTypeAlias))));
-                tableData.AppendLine(string.Format("<td>{0}</td>", prop.AllDocTypes.Count()));
-
-                tableData.AppendLine("</tr>");
+                var controllerContext = this.ControllerContext;
+                var displayHtml =
+                    ApiControllerHtmlHelper.GetPartialViewHtml(controllerContext, pvPath, viewData, HttpContext.Current);
+                returnSB.AppendLine(displayHtml);
             }
+            catch (System.ArgumentNullException eNull)
+            {
+                if (eNull.Message.Contains("Parameter name: view"))
+                {
+                    throw new ArgumentNullException($"The View file '{pvPath}' is missing and cannot be rendered.", eNull);
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            catch (Exception e)
+            { throw; }
 
-            returnSB.AppendLine(tableStart);
-            returnSB.Append(tableData);
-            returnSB.AppendLine(tableEnd);
-
+            //RETURN AS HTML
             return new HttpResponseMessage()
             {
                 Content = new StringContent(
@@ -398,6 +393,26 @@
                     "text/html"
                 )
             };
+
+
+            //var tableData = new StringBuilder();
+
+            //foreach (var prop in propertiesList)
+            //{
+            //    tableData.AppendLine("<tr>");
+
+            //    tableData.AppendLine(string.Format("<td>{0}</td>", prop.UmbPropertyType.Name));
+            //    tableData.AppendLine(string.Format("<td>{0}</td>", prop.UmbPropertyType.Alias));
+            //    tableData.AppendLine(string.Format("<td>{0}</td>", prop.DataType.Name));
+            //    tableData.AppendLine(string.Format("<td>{0}</td>", prop.DataType.EditorAlias));
+            //    tableData.AppendLine(string.Format("<td>{0}</td>", prop.DataType.DatabaseType));
+            //    tableData.AppendLine(string.Format("<td>{0}</td>", string.Join(", ", prop.AllDocTypes.Select(n => n.DocTypeAlias))));
+            //    tableData.AppendLine(string.Format("<td>{0}</td>", prop.AllDocTypes.Count()));
+
+            //    tableData.AppendLine("</tr>");
+            //}
+
+
         }
 
 
@@ -498,8 +513,7 @@
             var viewData = new ViewDataDictionary();
             viewData.Model = dataTypes;
             //viewData.Add("SpecialMessage", specialMessage);
-
-
+            
             //RENDER
             try
             {
@@ -532,7 +546,6 @@
                 )
             };
         }
-
 
         /// /Umbraco/backoffice/Api/SiteAuditorApi/GetAllDataTypesAsCsv
         [System.Web.Http.AcceptVerbs("GET")]
@@ -647,46 +660,41 @@
         [System.Web.Http.AcceptVerbs("GET")]
         public HttpResponseMessage GetAllDocTypesAsHtmlTable()
         {
-            var saService = GetSiteAuditorService();
             var returnSB = new StringBuilder();
+            var saService = GetSiteAuditorService();
 
+            var pvPath = "/App_Plugins/Dragonfly.SiteAuditor/Views/AllDocTypesAsHtmlTable.cshtml"; // _TesterConfig.GetAppPluginsPath() + "Views/Start.cshtml";
+            
             var allDts = saService.GetAuditableDocTypes();
 
-            var tableStart = @"
-                <table>
-                    <tr>
-                        <th>Doctype Name</th>
-                        <th>Alias</th>
-                        <th>Default Template</th>
-                        <th>Id</th>
-                        <th>GUID</th>
-                        <th>Create Date</th>
-                        <th>Update Date</th>
-                    </tr>";
+            //VIEW DATA 
+            var viewData = new ViewDataDictionary();
+            viewData.Model = allDts;
+            //viewData.Add("SpecialMessage", specialMessage);
 
-            var tableEnd = @"</table>";
-
-            var tableData = new StringBuilder();
-
-            foreach (var item in allDts)
+            //RENDER
+            try
             {
-                tableData.AppendLine("<tr>");
-
-                tableData.AppendLine(string.Format("<td>{0}</td>", item.Name));
-                tableData.AppendLine(string.Format("<td>{0}</td>", item.Alias));
-                tableData.AppendLine(string.Format("<td>{0}</td>", item.DefaultTemplateName));
-                tableData.AppendLine(string.Format("<td>{0}</td>", item.Id));
-                tableData.AppendLine(string.Format("<td>{0}</td>", item.GUID));
-                tableData.AppendLine(string.Format("<td>{0}</td>", item.ContentType.CreateDate));
-                tableData.AppendLine(string.Format("<td>{0}</td>", item.ContentType.UpdateDate));
-
-                tableData.AppendLine("</tr>");
+                var controllerContext = this.ControllerContext;
+                var displayHtml =
+                    ApiControllerHtmlHelper.GetPartialViewHtml(controllerContext, pvPath, viewData, HttpContext.Current);
+                returnSB.AppendLine(displayHtml);
             }
+            catch (System.ArgumentNullException eNull)
+            {
+                if (eNull.Message.Contains("Parameter name: view"))
+                {
+                    throw new ArgumentNullException($"The View file '{pvPath}' is missing and cannot be rendered.", eNull);
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            catch (Exception e)
+            { throw; }
 
-            returnSB.AppendLine(tableStart);
-            returnSB.Append(tableData);
-            returnSB.AppendLine(tableEnd);
-
+            //RETURN AS HTML
             return new HttpResponseMessage()
             {
                 Content = new StringContent(
@@ -718,7 +726,7 @@
                     item.Name,
                     item.Alias,
                     item.DefaultTemplateName,
-                    item.GUID,
+                    item.Guid,
                     item.ContentType.CreateDate,
                     item.ContentType.UpdateDate,
                     Environment.NewLine);
@@ -730,6 +738,57 @@
 
         #endregion
 
+        #region Special Queries
+        /// /Umbraco/backoffice/Api/SiteAuditorApi/TemplateUsageReport
+        [System.Web.Http.AcceptVerbs("GET")]
+        public HttpResponseMessage TemplateUsageReport()
+        {
+            var returnSB = new StringBuilder();
+            var saService = GetSiteAuditorService();
+
+            var pvPath = "/App_Plugins/Dragonfly.SiteAuditor/Views/TemplateUsageReport.cshtml"; // _TesterConfig.GetAppPluginsPath() + "Views/Start.cshtml";
+
+            var sm = new StatusMessage();
+           
+            //VIEW DATA 
+            var viewData = new ViewDataDictionary();
+            viewData.Model = sm;
+            viewData.Add("TemplatesUsedOnContent", saService.TemplatesUsedOnContent());
+            viewData.Add("TemplatesNotUsedOnContent", saService.TemplatesNotUsedOnContent());
+
+            //RENDER
+            try
+            {
+                var controllerContext = this.ControllerContext;
+                var displayHtml =
+                    ApiControllerHtmlHelper.GetPartialViewHtml(controllerContext, pvPath, viewData, HttpContext.Current);
+                returnSB.AppendLine(displayHtml);
+            }
+            catch (System.ArgumentNullException eNull)
+            {
+                if (eNull.Message.Contains("Parameter name: view"))
+                {
+                    throw new ArgumentNullException($"The View file '{pvPath}' is missing and cannot be rendered.", eNull);
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            catch (Exception e)
+            { throw; }
+
+            //RETURN AS HTML
+            return new HttpResponseMessage()
+            {
+                Content = new StringContent(
+                    returnSB.ToString(),
+                    Encoding.UTF8,
+                    "text/html"
+                )
+            };
+        }
+        #endregion
 
 
         #region Tests & Examples

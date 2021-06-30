@@ -3,7 +3,7 @@
         <div class="umb-editor-sub-header" umb-sticky-bar="">
             <h3><localize key="SiteAuditor_SiteAuditor">Umbraco 8 Site Auditor</localize></h3>
         </div>
-        <h4><localize key="SiteAuditor_GetStarted">Get Started</localize></h4>
+        <!--<h4><localize key="SiteAuditor_GetStarted">Get Started</localize></h4>-->
         <!--<p class="mt3">
         <localize key="SiteAuditor_Instructions">The Site Tester visits all the content pages on your site and reports errors.</localize>
     </p>
@@ -21,53 +21,63 @@
             <localize key="SiteAuditor_StartTestingButton">Start Testing / Review Past Test Results</localize>
         </a>
     </p>-->
+        <h4><localize key="SiteAuditor_Content">Content</localize></h4>
 
-        <h2>Content</h2>
-
-        <h3>All Content Nodes</h3>
+        <h5>All Content Nodes</h5>
         <p>These will take a long time to run for large sites. Please be patient.</p>
         <ul>
-            <li><a target="_blank" href="/Umbraco/backoffice/Api/SiteAuditorApi/GetAllContentAsXml">Get All Content As Xml</a> [no parameters]</li>
-            <li><a target="_blank" href="/Umbraco/backoffice/Api/SiteAuditorApi/GetAllContentAsJson">Get All Content As Json</a> [no parameters]</li>
-            <li><a target="_blank" href="/Umbraco/backoffice/Api/SiteAuditorApi/GetAllContentAsHtmlTable">Get All Content As HtmlTable</a> [no parameters]</li>
-            <li><a target="_blank" href="/Umbraco/backoffice/Api/SiteAuditorApi/GetAllContentAsCsv">Get All Content As Csv</a> [no parameters]</li>
+            <li><a target="_blank" href="/Umbraco/backoffice/Api/SiteAuditorApi/GetAllContentAsXml">Get All Content As Xml</a> </li>
+            <li><a target="_blank" href="/Umbraco/backoffice/Api/SiteAuditorApi/GetAllContentAsJson">Get All Content As Json</a> </li>
+            <li><a target="_blank" href="/Umbraco/backoffice/Api/SiteAuditorApi/GetAllContentAsHtmlTable">Get All Content As HtmlTable</a> </li>
+            <li><a target="_blank" href="/Umbraco/backoffice/Api/SiteAuditorApi/GetAllContentAsCsv">Get All Content As Csv</a> </li>
         </ul>
 
-        <h3>Content Nodes with Property Data</h3>
+        <h5>Content Nodes with Property Data</h5>
         <ul>
             <li><a target="_blank" href="/Umbraco/backoffice/Api/SiteAuditorApi/GetContentWithValues">Get Content With Values</a></li>
         </ul>
 
+        <hr />
+        <h4><localize key="SiteAuditor_DocumentTypes">Document Types</localize></h4>
 
-        <h2>Document Types</h2>
-        
-        <h3>All DocTypes</h3>
+        <h5>All DocTypes</h5>
         <ul>
-            <li><a target="_blank" href="/Umbraco/backoffice/Api/SiteAuditorApi/GetAllDocTypesAsXml">Get All Doctypes As Xml</a> [no parameters]</li>
-            <li><a target="_blank" href="/Umbraco/backoffice/Api/SiteAuditorApi/GetAllDocTypesAsJson">Get All Doctypes As Json</a> [no parameters]</li>
-            <li><a target="_blank" href="/Umbraco/backoffice/Api/SiteAuditorApi/GetAllDocTypesAsHtmlTable">Get All Doctypes As Html</a> [no parameters]</li>
-            <li><a target="_blank" href="/Umbraco/backoffice/Api/SiteAuditorApi/GetAllDocTypesAsCsv">Get All Doctypes As Csv</a> [no parameters]</li>
+            <li><a target="_blank" href="/Umbraco/backoffice/Api/SiteAuditorApi/GetAllDocTypesAsXml">Get All Doctypes As Xml</a> </li>
+            <li><a target="_blank" href="/Umbraco/backoffice/Api/SiteAuditorApi/GetAllDocTypesAsJson">Get All Doctypes As Json</a> </li>
+            <li><a target="_blank" href="/Umbraco/backoffice/Api/SiteAuditorApi/GetAllDocTypesAsHtmlTable">Get All Doctypes As Html</a> </li>
+            <li><a target="_blank" href="/Umbraco/backoffice/Api/SiteAuditorApi/GetAllDocTypesAsCsv">Get All Doctypes As Csv</a> </li>
         </ul>
 
-        <h2>Document Type Properties</h2>
-
-        <h3>All Properties</h3>
+        <h5>All DocType Properties</h5>
         <ul>
-            <li><a target="_blank" href="/Umbraco/backoffice/Api/SiteAuditorApi/GetAllPropertiesAsXml">Get All Properties As Xml</a> [no parameters]</li>
-            <li><a target="_blank" href="/Umbraco/backoffice/Api/SiteAuditorApi/GetAllPropertiesAsJson">Get All Properties As Json</a> [no parameters]</li>
-            <li><a target="_blank" href="/Umbraco/backoffice/Api/SiteAuditorApi/GetAllPropertiesAsHtmlTable">Get All Properties As Html</a> [no parameters]</li>
-            <li><a target="_blank" href="/Umbraco/backoffice/Api/SiteAuditorApi/GetAllPropertiesAsCsv">Get All Properties As Csv</a> [no parameters]</li>
+            <li><a target="_blank" href="/Umbraco/backoffice/Api/SiteAuditorApi/GetAllPropertiesAsXml">Get All Properties As Xml</a> </li>
+            <li><a target="_blank" href="/Umbraco/backoffice/Api/SiteAuditorApi/GetAllPropertiesAsJson">Get All Properties As Json</a> </li>
+            <li><a target="_blank" href="/Umbraco/backoffice/Api/SiteAuditorApi/GetAllPropertiesAsHtmlTable">Get All Properties As Html</a> </li>
+            <li><a target="_blank" href="/Umbraco/backoffice/Api/SiteAuditorApi/GetAllPropertiesAsCsv">Get All Properties As Csv</a> </li>
         </ul>
 
-        <h2>Data Types</h2>
+        <hr />
+        <h4><localize key="SiteAuditor_DataTypes">Data Types</localize></h4>
 
-        <h3>All DataTypes</h3>
+        <h5>All DataTypes</h5>
         <ul>
-            <li><a target="_blank" href="/Umbraco/backoffice/Api/SiteAuditorApi/GetAllDataTypesAsXml">Get All DataTypes As Xml</a> [no parameters]</li>
-            <li><a target="_blank" href="/Umbraco/backoffice/Api/SiteAuditorApi/GetAllDataTypesAsJson">Get All DataTypes As Json</a> [no parameters]</li>
-            <li><a target="_blank" href="/Umbraco/backoffice/Api/SiteAuditorApi/GetAllDataTypesAsHtmlTable">Get All DataTypes As Html</a> [no parameters]</li>
-            <li><a target="_blank" href="/Umbraco/backoffice/Api/SiteAuditorApi/GetAllDataTypesAsCsv">Get All DataTypes As Csv</a> [no parameters]</li>
+            <li><a target="_blank" href="/Umbraco/backoffice/Api/SiteAuditorApi/GetAllDataTypesAsXml">Get All DataTypes As Xml</a> </li>
+            <li><a target="_blank" href="/Umbraco/backoffice/Api/SiteAuditorApi/GetAllDataTypesAsJson">Get All DataTypes As Json</a> </li>
+            <li><a target="_blank" href="/Umbraco/backoffice/Api/SiteAuditorApi/GetAllDataTypesAsHtmlTable">Get All DataTypes As Html</a> </li>
+            <li><a target="_blank" href="/Umbraco/backoffice/Api/SiteAuditorApi/GetAllDataTypesAsCsv">Get All DataTypes As Csv</a> </li>
         </ul>
+
+        <hr />
+        <h4><localize key="SiteAuditor_AdditionalReports">Additional Reports</localize></h4>
+
+        <!--<h5>All DataTypes</h5>-->
+        <ul>
+            <li><a target="_blank" href="/Umbraco/backoffice/Api/SiteAuditorApi/TemplateUsageReport">Template Usage</a> (Qty of Pages Using Templates + Templates Not In Use) </li>
+            <!--<li><a target="_blank" href="/Umbraco/backoffice/Api/SiteAuditorApi/GetAllDataTypesAsJson">Get All DataTypes As Json</a> </li>
+            <li><a target="_blank" href="/Umbraco/backoffice/Api/SiteAuditorApi/GetAllDataTypesAsHtmlTable">Get All DataTypes As Html</a> </li>
+            <li><a target="_blank" href="/Umbraco/backoffice/Api/SiteAuditorApi/GetAllDataTypesAsCsv">Get All DataTypes As Csv</a> </li>-->
+        </ul>
+
 
 
         <p class="mt5">

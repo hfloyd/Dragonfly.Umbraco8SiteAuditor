@@ -44,14 +44,12 @@
         public bool IsNestedContent { get; internal set; }
         [DataMember]
         public NestedContentConfiguration.ContentType[] NestedContentDocTypesConfig { get; internal set; }
-
         
-
         #endregion
 
- #region Methods
+        #region Methods
 
-        
+
         #endregion
 
     }
@@ -60,13 +58,13 @@
     {
         public string PropsForDoctype { get; internal set; }
         public IEnumerable<AuditableProperty> AllProperties { get; internal set; }
-
     }
 
     public class PropertyDoctypeInfo
     {
+        public int Id { get; set; }
         public string DocTypeAlias { get; set; }
-
         public string GroupName { get; set; }
+
     }
 }

@@ -3,6 +3,7 @@
 @{
     var entityId = Model;
     var type = Mvc.GetSafeViewDataString(this.ViewData,"EntityType");
+    var linkTitle = Mvc.GetSafeViewDataString(this.ViewData,"LinkTitle", "Edit");
 
     var url = "";
     switch (type)
@@ -10,9 +11,15 @@
         case "DataType":
             url = string.Format("/umbraco/#/settings/dataTypes/edit/{0}", entityId);
             break;
+
+        case "DocType":
+            url = string.Format("/umbraco/#/settings/documentTypes/edit/{0}", entityId);
+            break;
     }
     
 }
-
-<a href="@url" target="_blank">Edit</a>
+@if (entityId != 0)
+{
+    <a href="@url" target="_blank">@linkTitle</a>
+}
 
