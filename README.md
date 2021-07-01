@@ -1,11 +1,11 @@
-# Dragonfly.XXXX #
+# Dragonfly.Umbraco8SiteAuditor #
 
-A collection of .Net Helpers/Models created by [Heather Floyd](https://www.HeatherFloyd.com).
+A collection of tools to extract data about an Umbraco 8 site created by [Heather Floyd](https://www.HeatherFloyd.com).
 
 ## Installation ##
-[![Nuget Downloads](https://buildstats.info/nuget/Dragonfly.XXXX)](https://www.nuget.org/packages/Dragonfly.XXXX/)
+[![Nuget Downloads](https://buildstats.info/nuget/Dragonfly.Umbraco8SiteAuditor)](https://www.nuget.org/packages/Dragonfly.Umbraco8SiteAuditor/)
 
-     PM>   Install-Package Dragonfly.XXXX
+     PM>   Install-Package Dragonfly.Umbraco8SiteAuditor
 
 
 
@@ -15,4 +15,4 @@ A collection of .Net Helpers/Models created by [Heather Floyd](https://www.Heath
 
 ## Resources ##
 
-GitHub Repository: [https://github.com/hfloyd/Dragonfly.XXXX](https://github.com/hfloyd/Dragonfly.XXXX)
+GitHub Repository: [https://github.com/hfloyd/Dragonfly.Umbraco8SiteAuditor](https://github.com/hfloyd/Dragonfly.Umbraco8SiteAuditor)
