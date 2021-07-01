@@ -131,19 +131,96 @@
         /// <param name="PropertyAlias"></param>
         /// <param name="Node"></param>
         /// <returns></returns>
-        public static NodePropertyDataTypeInfo GetPropertyDataTypeInfo(ServiceContext Services, string PropertyAlias, IPublishedContent Node)
+        //public static NodePropertyDataTypeInfo GetPropertyDataTypeInfo(ServiceContext Services, string PropertyAlias, IPublishedContent Node)
+        //{
+        //    var umbContentTypeService = Services.ContentTypeService;
+        //    var umbDataTypeService = Services.DataTypeService;
+
+        //    var dtInfo = new NodePropertyDataTypeInfo();
+        //    dtInfo.NodeId = Node.Id;
+        //    dtInfo.Property = Node.GetProperty(PropertyAlias);
+
+        //    //Find datatype of property
+        //    IDataType dataType = null;
+
+        //    var docType = umbContentTypeService.Get(Node.ContentType.Id);
+        //    var matchingProperties = docType.PropertyTypes.Where(n => n.Alias == PropertyAlias).ToList();
+
+        //    if (matchingProperties.Any())
+        //    {
+        //        var propertyType = matchingProperties.First();
+        //        dataType = umbDataTypeService.GetDataType(propertyType.DataTypeId);
+
+        //        dtInfo.DataType = dataType;
+        //        dtInfo.PropertyEditorAlias = dataType.EditorAlias;
+        //        dtInfo.DatabaseType = dataType.DatabaseType.ToString();
+        //        dtInfo.DocTypeAlias = Node.ContentType.Alias;
+        //    }
+        //    else
+        //    {
+        //        //Look at Compositions for prop data
+        //        var matchingCompProperties = docType.CompositionPropertyTypes.Where(n => n.Alias == PropertyAlias).ToList();
+        //        if (matchingCompProperties.Any())
+        //        {
+        //            var propertyType = matchingCompProperties.First();
+        //            dataType = umbDataTypeService.GetDataType(propertyType.DataTypeId);
+
+        //            dtInfo.DataType = dataType;
+        //            dtInfo.PropertyEditorAlias = dataType.EditorAlias;
+        //            dtInfo.DatabaseType = dataType.DatabaseType.ToString();
+
+        //            if (docType.ContentTypeComposition.Any())
+        //            {
+        //                var compsList = docType.ContentTypeComposition.Where(n => n.PropertyTypeExists(PropertyAlias)).ToList();
+        //                if (compsList.Any())
+        //                {
+        //                    dtInfo.DocTypeAlias = Node.ContentType.Alias;
+        //                    dtInfo.DocTypeCompositionAlias = compsList.First().Alias;
+        //                }
+        //                else
+        //                {
+        //                    dtInfo.DocTypeAlias = Node.ContentType.Alias;
+        //                    dtInfo.DocTypeCompositionAlias = "Unknown Composition";
+        //                }
+        //            }
+        //        }
+        //        else
+        //        {
+        //            dtInfo.ErrorMessage = $"No property found for alias '{PropertyAlias}' in DocType '{docType.Name}'";
+        //        }
+        //    }
+
+        //    return dtInfo;
+        //}
+
+        /// <summary>
+        /// Get a NodePropertyDataTypeInfo model for a specified Node and Property Alias
+        /// (Includes information about the Property, Datatype, and the node's property Value)
+        /// </summary>
+        /// <param name="PropertyAlias"></param>
+        /// <param name="Node"></param>
+        /// <returns></returns>
+        public static NodePropertyDataTypeInfo GetPropertyDataTypeInfo(ServiceContext Services, string PropertyAlias, AuditableContent Node)
         {
             var umbContentTypeService = Services.ContentTypeService;
             var umbDataTypeService = Services.DataTypeService;
 
             var dtInfo = new NodePropertyDataTypeInfo();
-            dtInfo.NodeId = Node.Id;
-            dtInfo.Property = Node.GetProperty(PropertyAlias);
+            dtInfo.NodeId = Node.UmbContentNode.Id;
+
+            //if (Node.UmbPublishedNode != null)
+            //{
+            //    dtInfo.Property = Node.UmbPublishedNode.GetProperty(PropertyAlias);
+            //}
+            //else
+            //{
+            dtInfo.Property = Node.UmbContentNode.Properties[PropertyAlias];
+            //}
 
             //Find datatype of property
             IDataType dataType = null;
 
-            var docType = umbContentTypeService.Get(Node.ContentType.Id);
+            var docType = umbContentTypeService.Get(Node.UmbContentNode.ContentTypeId);
             var matchingProperties = docType.PropertyTypes.Where(n => n.Alias == PropertyAlias).ToList();
 
             if (matchingProperties.Any())
@@ -154,7 +231,7 @@
                 dtInfo.DataType = dataType;
                 dtInfo.PropertyEditorAlias = dataType.EditorAlias;
                 dtInfo.DatabaseType = dataType.DatabaseType.ToString();
-                dtInfo.DocTypeAlias = Node.ContentType.Alias;
+                dtInfo.DocTypeAlias = docType.Alias;
             }
             else
             {
@@ -174,12 +251,12 @@
                         var compsList = docType.ContentTypeComposition.Where(n => n.PropertyTypeExists(PropertyAlias)).ToList();
                         if (compsList.Any())
                         {
-                            dtInfo.DocTypeAlias = Node.ContentType.Alias;
+                            dtInfo.DocTypeAlias = docType.Alias;
                             dtInfo.DocTypeCompositionAlias = compsList.First().Alias;
                         }
                         else
                         {
-                            dtInfo.DocTypeAlias = Node.ContentType.Alias;
+                            dtInfo.DocTypeAlias = docType.Alias;
                             dtInfo.DocTypeCompositionAlias = "Unknown Composition";
                         }
                     }

@@ -12,7 +12,7 @@
         public string DatabaseType { get; set; }
         public string ErrorMessage { get; set; }
         public IDataType DataType { get; set; }
-        public IPublishedProperty Property { get; set; }
+        public Property Property { get; set; }
 
         public bool HasError
         {

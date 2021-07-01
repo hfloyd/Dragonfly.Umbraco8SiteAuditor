@@ -13,9 +13,9 @@
     <PackageProjectUrl>https://github.com/hfloyd/Dragonfly.Umbraco8SiteAuditor</PackageProjectUrl>
     <RepositoryUrl>https://github.com/hfloyd/Dragonfly.Umbraco8SiteAuditor</RepositoryUrl>
     <PackageId>Dragonfly.Umbraco8SiteAuditor</PackageId>
-    <Version>0.1.2</Version>
+    <Version>0.2.0</Version>
     <AssemblyName>Dragonfly.Umbraco8SiteAuditor</AssemblyName>
-    <PackageReleaseNotes>Addition of Auditable Doctype</PackageReleaseNotes>
+    <PackageReleaseNotes>Various enhancements including more infromation dispalyed in HTML views, back-office Dashboard control, etc.</PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="SiteAuditor\Models\Dtos\**" />
@@ -41,8 +41,4 @@
   </ItemGroup>
 
   <Import Project="..\Custom.targets" />
-
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="XCOPY /s /y &quot;$(TargetDir)$(TargetName).*&quot; &quot;C:\Users\Heather\NAS Folders\Active Projects\Webs\Clients\GHXL\sourcecode\Ghx.Web\bin&quot;&#xD;&#xA;XCOPY /s /y /i &quot;$(ProjectDir)App_Plugins\*&quot; &quot;C:\Users\Heather\NAS Folders\Active Projects\Webs\Clients\GHXL\sourcecode\Ghx.Web\App_Plugins&quot;&#xD;&#xA;&#xD;&#xA;XCOPY /s /y &quot;$(TargetDir)$(TargetName).*&quot; &quot;C:\Users\Heather\NAS Folders\Active Projects\Webs\Clients\GHXL\sourcecode-GHXV7\UmbracoCms.8.14.0\bin&quot;&#xD;&#xA;XCOPY /s /y /i &quot;$(ProjectDir)App_Plugins\*&quot; &quot;C:\Users\Heather\NAS Folders\Active Projects\Webs\Clients\GHXL\sourcecode-GHXV7\UmbracoCms.8.14.0\App_Plugins&quot;&#xD;&#xA;&#xD;&#xA;" />
-  </Target>
 </Project>

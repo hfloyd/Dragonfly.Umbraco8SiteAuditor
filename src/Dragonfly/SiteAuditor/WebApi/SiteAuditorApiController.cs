@@ -232,7 +232,7 @@
 
         /// /Umbraco/backoffice/Api/SiteAuditorApi/GetContentWithValues?PropertyAlias=xxx&IncludeUnpublished=false
         [System.Web.Http.AcceptVerbs("GET")]
-        public HttpResponseMessage GetContentWithValues(string PropertyAlias, bool IncludeUnpublished = false)
+        public HttpResponseMessage GetContentWithValues(string PropertyAlias)
         {
             var saService = GetSiteAuditorService();
             var returnSB = new StringBuilder();
@@ -241,14 +241,17 @@
             var pvPath = "~/App_Plugins/Dragonfly.SiteAuditor/Views/ContentWithValuesTable.cshtml";
 
             //FIND NODES TO DISPLAY
-            var allNodes = saService.GetAllNodes().ToList();
-            var nodesWithValue = allNodes.Where(n => n.Properties.Where(p => p.Alias == PropertyAlias && p.HasValue()).Any()).ToList();
+            IEnumerable<AuditableContent> allNodes = new List<AuditableContent>();
+            allNodes = saService.GetContentNodes().ToList();
 
-            //VIEW DATA 
+            var nodesWithProperty = allNodes.Where(n => n.UmbContentNode.HasProperty(PropertyAlias)).ToList();
+            //var nodesWithValue = nodesWithProperty.Where(n => n.UmbContentNode.HasPropertyValue(PropertyAlias));
+            var nodesWithValue = nodesWithProperty;
+           //VIEW DATA 
             var viewData = new ViewDataDictionary();
             viewData.Model = nodesWithValue;
             viewData.Add("PropertyAlias", PropertyAlias);
-            viewData.Add("IncludeUnpublished", IncludeUnpublished);
+           // viewData.Add("IncludeUnpublished", IncludeUnpublished);
 
             //RENDER
             var controllerContext = this.ControllerContext;
@@ -282,18 +285,17 @@
             //BUILD HTML
             returnSB.AppendLine($"<h1>Get Content with Values</h1>");
             returnSB.AppendLine($"<h3>Available Properties</h3>");
-            returnSB.AppendLine("<p>Note: Choosing the 'All' option will take significantly longer to load than the 'Published' option because we need to bypass the cache and query the database directly.</p>");
+            //returnSB.AppendLine("<p>Note: Choosing the 'All' option will take significantly longer to load than the 'Published' option because we need to bypass the cache and query the database directly.</p>");
 
             returnSB.AppendLine("<ul>");
 
             foreach (var propAlias in allPropsAliases.OrderBy(n => n))
             {
-                var url1 =
-                    $"/Umbraco/backoffice/Api/SiteAuditorApi/GetContentWithValues?PropertyAlias={propAlias}&IncludeUnpublished=false";
-                var url2 =
-                    $"/Umbraco/backoffice/Api/SiteAuditorApi/GetContentWithValues?PropertyAlias={propAlias}&IncludeUnpublished=true";
+                //var url1 =
+                //    $"/Umbraco/backoffice/Api/SiteAuditorApi/GetContentWithValues?PropertyAlias={propAlias}&IncludeUnpublished=false";
+                var url2 = $"/Umbraco/backoffice/Api/SiteAuditorApi/GetContentWithValues?PropertyAlias={propAlias}";
 
-                returnSB.AppendLine($"<li>{propAlias} <a target=\"_blank\" href=\"{url1}\">Published</a> | <a target=\"_blank\" href=\"{url2}\">All</a></li>");
+                returnSB.AppendLine($"<li>{propAlias} <a target=\"_blank\" href=\"{url2}\">View</a></li>");
             }
 
             returnSB.AppendLine("</ul>");
@@ -513,7 +515,7 @@
             var viewData = new ViewDataDictionary();
             viewData.Model = dataTypes;
             //viewData.Add("SpecialMessage", specialMessage);
-            
+
             //RENDER
             try
             {
@@ -664,7 +666,7 @@
             var saService = GetSiteAuditorService();
 
             var pvPath = "/App_Plugins/Dragonfly.SiteAuditor/Views/AllDocTypesAsHtmlTable.cshtml"; // _TesterConfig.GetAppPluginsPath() + "Views/Start.cshtml";
-            
+
             var allDts = saService.GetAuditableDocTypes();
 
             //VIEW DATA 
@@ -749,7 +751,7 @@
             var pvPath = "/App_Plugins/Dragonfly.SiteAuditor/Views/TemplateUsageReport.cshtml"; // _TesterConfig.GetAppPluginsPath() + "Views/Start.cshtml";
 
             var sm = new StatusMessage();
-           
+
             //VIEW DATA 
             var viewData = new ViewDataDictionary();
             viewData.Model = sm;

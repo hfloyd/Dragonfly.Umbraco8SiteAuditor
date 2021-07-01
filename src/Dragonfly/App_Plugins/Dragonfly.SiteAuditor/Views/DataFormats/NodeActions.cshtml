@@ -10,5 +10,14 @@
 
 @if (content.IsPublished)
 {
-    <span> | </span><a href="@content.UmbPublishedNode.Url()" target="_blank">View</a>
+    try
+    {
+ <span> | </span><a href="@content.UmbPublishedNode.Url()" target="_blank">View</a>
+    }
+    catch (Exception e)
+    {
+        <span> | [Error - No Published Url]</span>
+        <!-- Exception: @e.Message  -->
+    }
+   
 }
