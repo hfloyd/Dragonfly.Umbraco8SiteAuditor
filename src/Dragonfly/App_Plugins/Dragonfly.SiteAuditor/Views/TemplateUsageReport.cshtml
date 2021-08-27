@@ -79,6 +79,13 @@
          }
 
          </tbody>
+         <tfoot>
+         <tr>
+             <td>#</td>
+             <th>Template</th>
+             <th>Qty of Content Nodes</th>
+         </tr>
+         </tfoot>
      </table>
  }
  </div>
@@ -88,22 +95,30 @@
  <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.12/js/dataTables.bootstrap.min.js"></script>
  <script type="text/javascript">
   $(document).ready(function () {
-   $('#umbracodata').DataTable();
-   //$('#umbracodata').dataTable({
-   //    "autoWidth": false,
-   //    "columns": [
-   //        null,
-   //        null,
-   //        null,
-   //        null,
-   //        null,
-   //        { "width": "50em" },
-   //        null,
-   //        null,
-   //        null,
-   //        null
-   //    ]
-   //});
+   // Setup - add a text input to each footer cell
+   $('#umbracodata tfoot th').each( function () {
+	var title = $(this).text();
+	$(this).html( '<input type="text" style="font-size:10px; width:100%;" placeholder="Search '+title+'" />' );
+   } );
+
+   // DataTable
+   $('#umbracodata').DataTable({
+	initComplete: function () {
+	 // Apply the search
+	 this.api().columns().every( function () {
+   var that = this;
+
+   $( 'input', this.footer() ).on( 'keyup change clear', function () {
+	if ( that.search() !== this.value ) {
+	 that
+   .search( this.value )
+   .draw();
+	}
+   } );
+	 } );
+	}
+   });
+
   });
  </script>
 </body>

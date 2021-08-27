@@ -4,5 +4,9 @@
 @{
     NodePropertyDataTypeInfo propInfo = Model;
 }
-<span>@propInfo.DataType.Name (@propInfo.PropertyEditorAlias [@propInfo.DatabaseType])</span>
+@if (propInfo != null)
+{
+    var name = propInfo.DataType != null ? propInfo.DataType.Name : "NULL DataType!";
+    <span>@name (@propInfo.PropertyEditorAlias [@propInfo.DatabaseType])</span>
+}
 

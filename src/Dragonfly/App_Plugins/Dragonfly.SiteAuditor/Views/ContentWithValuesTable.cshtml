@@ -40,11 +40,11 @@
 	<tr>
 	 <th>#</th>
 	 <th>Actions</th>
-
+     <th>"@propertyAlias" Data Type</th>
 	 <th>DocType</th>
-	 <th>"@propertyAlias" Data Type</th>
 	 <th>Node ID</th>
-	 <th>Node Name</th>
+	 <th>Node Path</th>
+	 <th>Is Published?</th>
 	 <th>"@propertyAlias" Value</th>
 	 <th> Has Value</th>
 					@* <th>Value Model Type</th>*@
@@ -52,74 +52,94 @@
 	</tr>
    </thead>
    <tbody>
-				@foreach (var node in contentList)
-				{
-					counter++;
-					var dtInfo = AuditHelper.GetPropertyDataTypeInfo(Current.Services, propertyAlias, node);
-		<tr>
+   @foreach (var node in contentList)
+   {
+       counter++;
+       var dtInfo = AuditHelper.GetPropertyDataTypeInfo(Current.Services, propertyAlias, node);
+       <tr>
 
-						@*  // #*@
-		 <td>@counter</td>
+           @*  // #*@
+           <td>@counter</td>
 
-						@*  //Actions*@
-		 <td>
-							@{
-								Html.RenderPartial("/App_Plugins/Dragonfly.SiteAuditor/Views/DataFormats/NodeActions.cshtml", node);
-							}
-		 </td>
+           @*  //Actions*@
+           <td>
+               @{
+                   Html.RenderPartial("/App_Plugins/Dragonfly.SiteAuditor/Views/DataFormats/NodeActions.cshtml", node);
+               }
+           </td>
 
-						@*//DocType*@
-		 <td>
-							@{
-								Html.RenderPartial("/App_Plugins/Dragonfly.SiteAuditor/Views/DataFormats/DocTypeInfo.cshtml", dtInfo);
-							}
-		 </td>
 
-						@*//PropertyAlias Type*@
-		 <td>
-							@{
-								Html.RenderPartial("/App_Plugins/Dragonfly.SiteAuditor/Views/DataFormats/PropertyTypeInfo.cshtml", dtInfo);
-							}
-		 </td>
 
-						@*//Node ID*@
-		 <td>@node.UmbContentNode.Id</td>
+           @*//PropertyAlias Type*@
+           <td>
+               @{
+                   Html.RenderPartial("/App_Plugins/Dragonfly.SiteAuditor/Views/DataFormats/PropertyTypeInfo.cshtml", dtInfo);
+               }
+           </td>
 
-						@*//Node Name*@
-		 <td>@node.UmbContentNode.Name</td>
+           @*//DocType*@
+           <td>
+               @{
+                   Html.RenderPartial("/App_Plugins/Dragonfly.SiteAuditor/Views/DataFormats/DocTypeInfo.cshtml", dtInfo);
+               }
+           </td>
 
-						@*//PropertyAlias Value*@
-						@if (dtInfo.DataType != null)
-						{
-			 <td>
-								@{
-									Html.RenderPartial("/App_Plugins/Dragonfly.SiteAuditor/Views/DataFormats/PropertyDataValue.cshtml", dtInfo);
-								}
-			 </td>
-						}
-						else
-						{
-							var propVal = node.UmbContentNode.GetValue<string>(propertyAlias);
-			 <td>@propVal</td>
-						}
+           @*//Node ID*@
+           <td>@node.UmbContentNode.Id</td>
 
-						@*//Has Value*@
-                        <td>@node.UmbContentNode.HasPropertyValue(propertyAlias)</td>
+           @*//Node Path*@
+           <td>@node.NodePathAsCustomText()</td>
 
-						@*//Value Model Type
+           @*//Is Published?*@
+           <td>@node.IsPublished</td>
+
+           @*//PropertyAlias Value*@
+           @if (dtInfo.DataType != null)
+           {
+               <td>
+                   @{
+                       Html.RenderPartial("/App_Plugins/Dragonfly.SiteAuditor/Views/DataFormats/PropertyDataValue.cshtml", dtInfo);
+                   }
+               </td>
+           }
+           else
+           {
+               var propVal = node.UmbContentNode.GetValue<string>(propertyAlias);
+               <td>@propVal</td>
+           }
+
+           @*//Has Value*@
+           <td>@node.UmbContentNode.HasPropertyValue(propertyAlias)</td>
+
+           @*//Value Model Type
 							<td>@dtInfo.Property.GetValue().GetType().ToString()</td>*@
 
-						@*//Date Last Updated*@
-		 <td>
-							@{
-								Html.RenderPartial("/App_Plugins/Dragonfly.SiteAuditor/Views/DataFormats/DateValue.cshtml", node.UmbContentNode.UpdateDate);
-							}
-		 </td>
+           @*//Date Last Updated*@
+           <td>
+               @{
+                   Html.RenderPartial("/App_Plugins/Dragonfly.SiteAuditor/Views/DataFormats/DateValue.cshtml", node.UmbContentNode.UpdateDate);
+               }
+           </td>
 
-		</tr>
-				}
+       </tr>
+   }
 
    </tbody>
+   <tfoot>
+   <tr>
+       <td>#</td>
+       <td>Actions</td>
+       <th>"@propertyAlias" Data Type</th>
+       <th>DocType</th>
+       <th>Node ID</th>
+       <th>Node Path</th>
+       <th>Is Published?</th>
+       <th>"@propertyAlias" Value</th>
+       <th> Has Value</th>
+       @* <th>Value Model Type</th>*@
+       <th>Date Last Updated</th>  
+   </tr>
+   </tfoot>
   </table>
 
  </div>
@@ -129,16 +149,30 @@
  <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.12/js/dataTables.bootstrap.min.js"></script>
  <script type="text/javascript">
   $(document).ready(function () {
-   $('#umbracodata').DataTable();
-		@*//$('#umbracodata').dataTable( {
-			//    "columns": [
-			//    { "width": "20%" },
-			//    null,
-			//    null,
-			//    null,
-			//    null
-			//        ]
-			//} );*@
+   // Setup - add a text input to each footer cell
+   $('#umbracodata tfoot th').each( function () {
+	var title = $(this).text();
+	$(this).html( '<input type="text" style="font-size:10px; width:100%;" placeholder="Search '+title+'" />' );
+   } );
+
+   // DataTable
+   $('#umbracodata').DataTable({
+	initComplete: function () {
+	 // Apply the search
+	 this.api().columns().every( function () {
+   var that = this;
+
+   $( 'input', this.footer() ).on( 'keyup change clear', function () {
+	if ( that.search() !== this.value ) {
+	 that
+   .search( this.value )
+   .draw();
+	}
+   } );
+	 } );
+	}
+   });
+
   });
  </script>
 </body>

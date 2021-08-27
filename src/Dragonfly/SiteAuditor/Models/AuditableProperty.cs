@@ -44,7 +44,10 @@
         public bool IsNestedContent { get; internal set; }
         [DataMember]
         public NestedContentConfiguration.ContentType[] NestedContentDocTypesConfig { get; internal set; }
-        
+
+        public string InComposition { get; set; }
+        public string GroupName { get; set; }
+
         #endregion
 
         #region Methods

@@ -12,6 +12,7 @@
     using Dragonfly.UmbracoHelpers;
 
     using Newtonsoft.Json;
+    using Umbraco.Core;
     using Umbraco.Web.WebApi;
 
     // /Umbraco/Api/SiteAuditorApi <-- UmbracoApiController
@@ -202,35 +203,132 @@
             var tableData = new StringBuilder();
 
             tableData.AppendLine(
-                "\"Node Name\",\"NodeID\",\"Node Path\",\"DocType\",\"ParentID\",\"Full URL\",\"Level\",\"Sort Order\",\"Template Name\",\"Create Date\",\"Update Date\"");
+                "\"Node Name\"" +
+                ",\"NodeID\"" +
+                ",\"Node Path\"" +
+                ",\"DocType\"" +
+                ",\"ParentID\"" +
+                ",\"Full URL\"" +
+                ",\"Level\"" +
+                ",\"Sort Order\"" +
+                ",\"Template Name\"" +
+                ",\"Udi\"" +
+                ",\"Create Date\"" +
+                ",\"Update Date\"");
 
             foreach (var auditNode in allNodes)
             {
-                tableData.AppendFormat(
-                    "\"{0}\",{1},\"{2}\",\"{3}\",{4},\"{5}\",{6},{7},\"{8}\",{9},{10}{11}",
-                    auditNode.UmbContentNode.Name,
-                    auditNode.UmbContentNode.Id,
-                    auditNode.NodePathAsCustomText(" > "),
-                    auditNode.UmbContentNode.ContentType.Alias,
-                    auditNode.UmbContentNode.ParentId,
-                    auditNode.FullNiceUrl,
-                    auditNode.UmbContentNode.Level,
-                    auditNode.UmbContentNode.SortOrder,
-                    auditNode.TemplateAlias,
-                    auditNode.UmbContentNode.CreateDate,
-                    auditNode.UmbContentNode.UpdateDate,
-                    Environment.NewLine);
+                var nodeLine = $"\"{auditNode.UmbContentNode.Name}\"" +
+                               $",{auditNode.UmbContentNode.Id}" +
+                               $",\"{auditNode.NodePathAsCustomText(" > ")}\"" +
+                               $",\"{auditNode.UmbContentNode.ContentType.Alias}\"" +
+                               $",{auditNode.UmbContentNode.ParentId}" +
+                               $",\"{auditNode.FullNiceUrl}\"" +
+                               $",{auditNode.UmbContentNode.Level}" +
+                               $",{auditNode.UmbContentNode.SortOrder}" +
+                               $",\"{auditNode.TemplateAlias}\"" +
+                               $",\"{auditNode.UmbContentNode.GetUdi()}\"" +
+                               $",{auditNode.UmbContentNode.CreateDate}" +
+                               $",{auditNode.UmbContentNode.UpdateDate}" +
+                               $"{Environment.NewLine}";
+
+                tableData.Append(nodeLine);
             }
             returnSB.Append(tableData);
 
             return Dragonfly.NetHelpers.Http.StringBuilderToFile(returnSB, "AllNodes.csv");
         }
 
+        /// /Umbraco/backoffice/Api/SiteAuditorApi/GetContentForDoctypeHtml?DocTypeAlias=X
+        [System.Web.Http.AcceptVerbs("GET")]
+        public HttpResponseMessage GetContentForDoctypeHtml(string DocTypeAlias)
+        {
+            var returnSB = new StringBuilder();
+            var saService = GetSiteAuditorService();
+
+            var pvPath = "/App_Plugins/Dragonfly.SiteAuditor/Views/AllContentAsHtmlTable.cshtml"; // _TesterConfig.GetAppPluginsPath() + "Views/Start.cshtml";
+
+            var allNodes = saService.GetContentNodes(DocTypeAlias);
+
+            //VIEW DATA 
+            var viewData = new ViewDataDictionary();
+            viewData.Model = allNodes;
+            //viewData.Add("SpecialMessage", specialMessage);
+
+            //RENDER
+            try
+            {
+                var controllerContext = this.ControllerContext;
+                var displayHtml =
+                    ApiControllerHtmlHelper.GetPartialViewHtml(controllerContext, pvPath, viewData, HttpContext.Current);
+                returnSB.AppendLine(displayHtml);
+            }
+            catch (System.ArgumentNullException eNull)
+            {
+                if (eNull.Message.Contains("Parameter name: view"))
+                {
+                    throw new ArgumentNullException($"The View file '{pvPath}' is missing and cannot be rendered.", eNull);
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            catch (Exception e)
+            { throw; }
+
+            //RETURN AS HTML
+            return new HttpResponseMessage()
+            {
+                Content = new StringContent(
+                    returnSB.ToString(),
+                    Encoding.UTF8,
+                    "text/html"
+                )
+            };
+        }
+
+        /// /Umbraco/backoffice/Api/SiteAuditorApi/GetContentForDoctypeHtml
+        [System.Web.Http.AcceptVerbs("GET")]
+        public HttpResponseMessage GetContentForDoctypeHtml()
+        {
+            var saService = GetSiteAuditorService();
+            var returnSB = new StringBuilder();
+
+            //BUILD HTML
+            var allSiteDocTypes = saService.GetAllDocTypes();
+            var allAliases = allSiteDocTypes.Select(n => n.Alias).OrderBy(n => n).ToList();
+
+            //BUILD HTML
+            returnSB.AppendLine($"<h1>Get Content for a Selected Document Type</h1>");
+            returnSB.AppendLine($"<h3>Available Document Types</h3>");
+            //returnSB.AppendLine("<p>Note: Choosing the 'All' option will take significantly longer to load than the 'Published' option because we need to bypass the cache and query the database directly.</p>");
+
+            returnSB.AppendLine("<ul>");
+
+            foreach (var alias in allAliases)
+            {
+                var url = $"/Umbraco/backoffice/Api/SiteAuditorApi/GetContentForDoctypeHtml?DocTypeAlias={alias}";
+
+                returnSB.AppendLine($"<li>{alias} <a target=\"_blank\" href=\"{url}\">View</a></li>");
+            }
+
+            returnSB.AppendLine("</ul>");
+
+            return new HttpResponseMessage()
+            {
+                Content = new StringContent(
+                    returnSB.ToString(),
+                    Encoding.UTF8,
+                    "text/html"
+                )
+            };
+        }
         #endregion
 
         #region GetContentWithValues
 
-        /// /Umbraco/backoffice/Api/SiteAuditorApi/GetContentWithValues?PropertyAlias=xxx&IncludeUnpublished=false
+        /// /Umbraco/backoffice/Api/SiteAuditorApi/GetContentWithValues?PropertyAlias=xxx
         [System.Web.Http.AcceptVerbs("GET")]
         public HttpResponseMessage GetContentWithValues(string PropertyAlias)
         {
@@ -241,17 +339,15 @@
             var pvPath = "~/App_Plugins/Dragonfly.SiteAuditor/Views/ContentWithValuesTable.cshtml";
 
             //FIND NODES TO DISPLAY
-            IEnumerable<AuditableContent> allNodes = new List<AuditableContent>();
-            allNodes = saService.GetContentNodes().ToList();
-
-            var nodesWithProperty = allNodes.Where(n => n.UmbContentNode.HasProperty(PropertyAlias)).ToList();
+            var nodesWithProperty =  saService.GetContentWithProperty(PropertyAlias);
             //var nodesWithValue = nodesWithProperty.Where(n => n.UmbContentNode.HasPropertyValue(PropertyAlias));
-            var nodesWithValue = nodesWithProperty;
-           //VIEW DATA 
+            //var nodesWithValue = nodesWithProperty;
+
+            //VIEW DATA 
             var viewData = new ViewDataDictionary();
-            viewData.Model = nodesWithValue;
+            viewData.Model = nodesWithProperty;
             viewData.Add("PropertyAlias", PropertyAlias);
-           // viewData.Add("IncludeUnpublished", IncludeUnpublished);
+            // viewData.Add("IncludeUnpublished", IncludeUnpublished);
 
             //RENDER
             var controllerContext = this.ControllerContext;
@@ -417,7 +513,6 @@
 
         }
 
-
         /// /Umbraco/backoffice/Api/SiteAuditorApi/GetAllPropertiesAsCsv
         [System.Web.Http.AcceptVerbs("GET")]
         public HttpResponseMessage GetAllPropertiesAsCsv()
@@ -451,6 +546,95 @@
 
             return Dragonfly.NetHelpers.Http.StringBuilderToFile(returnSB, "AllProperties.csv");
         }
+
+        // /Umbraco/backoffice/Api/SiteAuditorApi/GetPropertiesForDoctypeHtml?DocTypeAlias=xxx
+        [System.Web.Http.AcceptVerbs("GET")]
+        public HttpResponseMessage GetPropertiesForDoctypeHtml(string DocTypeAlias)
+        {
+            var saService = GetSiteAuditorService();
+            var returnSB = new StringBuilder();
+
+            var pvPath = "/App_Plugins/Dragonfly.SiteAuditor/Views/AllPropertiesAsHtmlTable.cshtml"; // _TesterConfig.GetAppPluginsPath() + "Views/Start.cshtml";
+
+            var siteProps = saService.AllPropertiesForDocType(DocTypeAlias);
+            var propertiesList = siteProps.AllProperties;
+
+            //VIEW DATA 
+            var viewData = new ViewDataDictionary();
+            viewData.Model = propertiesList;
+            viewData.Add("Title", $"Properties for Document Type '{DocTypeAlias}'");
+
+            //RENDER
+            try
+            {
+                var controllerContext = this.ControllerContext;
+                var displayHtml =
+                    ApiControllerHtmlHelper.GetPartialViewHtml(controllerContext, pvPath, viewData, HttpContext.Current);
+                returnSB.AppendLine(displayHtml);
+            }
+            catch (System.ArgumentNullException eNull)
+            {
+                if (eNull.Message.Contains("Parameter name: view"))
+                {
+                    throw new ArgumentNullException($"The View file '{pvPath}' is missing and cannot be rendered.", eNull);
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            catch (Exception e)
+            { throw; }
+
+            //RETURN AS HTML
+            return new HttpResponseMessage()
+            {
+                Content = new StringContent(
+                    returnSB.ToString(),
+                    Encoding.UTF8,
+                    "text/html"
+                )
+            };
+
+        }
+
+        /// /Umbraco/backoffice/Api/SiteAuditorApi/GetPropertiesForDoctypeHtml
+        [System.Web.Http.AcceptVerbs("GET")]
+        public HttpResponseMessage GetPropertiesForDoctypeHtml()
+        {
+            var saService = GetSiteAuditorService();
+            var returnSB = new StringBuilder();
+
+            //BUILD HTML
+            var allSiteDocTypes = saService.GetAllDocTypes();
+            var allAliases = allSiteDocTypes.Select(n => n.Alias).OrderBy(n => n).ToList();
+
+            //BUILD HTML
+            returnSB.AppendLine($"<h1>Get Properties for a Selected Document Type</h1>");
+            returnSB.AppendLine($"<h3>Available Document Types</h3>");
+            //returnSB.AppendLine("<p>Note: Choosing the 'All' option will take significantly longer to load than the 'Published' option because we need to bypass the cache and query the database directly.</p>");
+
+            returnSB.AppendLine("<ul>");
+
+            foreach (var alias in allAliases)
+            {
+                var url = $"/Umbraco/backoffice/Api/SiteAuditorApi/GetPropertiesForDoctypeHtml?DocTypeAlias={alias}";
+
+                returnSB.AppendLine($"<li>{alias} <a target=\"_blank\" href=\"{url}\">View</a></li>");
+            }
+
+            returnSB.AppendLine("</ul>");
+
+            return new HttpResponseMessage()
+            {
+                Content = new StringContent(
+                    returnSB.ToString(),
+                    Encoding.UTF8,
+                    "text/html"
+                )
+            };
+        }
+
 
         //public IHttpActionResult GetProperty(string PropertyAlias)
         //{
@@ -499,7 +683,7 @@
             };
         }
 
-        // /Umbraco/backoffice/Api/SiteAuditorApi/GetAllDataTypesAsHtml
+        // /Umbraco/backoffice/Api/SiteAuditorApi/GetAllDataTypesAsHtmlTable
         [System.Web.Http.AcceptVerbs("GET")]
         public HttpResponseMessage GetAllDataTypesAsHtmlTable()
         {
@@ -710,6 +894,120 @@
         /// /Umbraco/backoffice/Api/SiteAuditorApi/GetAllDocTypesAsCsv
         [System.Web.Http.AcceptVerbs("GET")]
         public HttpResponseMessage GetAllDocTypesAsCsv()
+        {
+            var saService = GetSiteAuditorService();
+            var returnSB = new StringBuilder();
+
+            var allDts = saService.GetAuditableDocTypes();
+
+            var tableData = new StringBuilder();
+
+            tableData.AppendLine(
+                "\"Doctype Name\",\"Alias\",\"Default Template\",\"GUID\",\"Create Date\",\"Update Date\"");
+
+            foreach (var item in allDts)
+            {
+                tableData.AppendFormat(
+                    "\"{0}\",\"{1}\",\"{2}\",\"{3}\",{4},{5}{6}",
+                    item.Name,
+                    item.Alias,
+                    item.DefaultTemplateName,
+                    item.Guid,
+                    item.ContentType.CreateDate,
+                    item.ContentType.UpdateDate,
+                    Environment.NewLine);
+            }
+            returnSB.Append(tableData);
+
+            return Dragonfly.NetHelpers.Http.StringBuilderToFile(returnSB, "AllDoctypes.csv");
+        }
+
+        #endregion
+
+        #region Templates Info
+
+        /// /Umbraco/backoffice/Api/SiteAuditorApi/GetAllTemplatesAsXml
+        [System.Web.Http.AcceptVerbs("GET")]
+        public IEnumerable<AuditableTemplate> GetAllTemplatesAsXml()
+        {
+            var saService = GetSiteAuditorService();
+            var allTemps = saService.GetAuditableTemplates();
+
+            return allTemps;
+        }
+
+        /// /Umbraco/backoffice/Api/SiteAuditorApi/GetAllTemplatesAsJson
+        [System.Web.Http.AcceptVerbs("GET")]
+        public HttpResponseMessage GetAllTemplatesAsJson()
+        {
+            var saService = GetSiteAuditorService();
+
+            var allTemps = saService.GetAuditableTemplates();
+
+            string json = JsonConvert.SerializeObject(allTemps);
+
+            return new HttpResponseMessage()
+            {
+                Content = new StringContent(
+                    json,
+                    Encoding.UTF8,
+                    "application/json"
+                )
+            };
+        }
+
+        /// /Umbraco/backoffice/Api/SiteAuditorApi/GetAllTemplatesAsHtmlTable
+        [System.Web.Http.AcceptVerbs("GET")]
+        public HttpResponseMessage GetAllTemplatesAsHtmlTable()
+        {
+            var returnSB = new StringBuilder();
+            var saService = GetSiteAuditorService();
+
+            var pvPath = "/App_Plugins/Dragonfly.SiteAuditor/Views/AllTemplatesAsHtmlTable.cshtml"; // _TesterConfig.GetAppPluginsPath() + "Views/Start.cshtml";
+
+            var allTemps = saService.GetAuditableTemplates();
+
+            //VIEW DATA 
+            var viewData = new ViewDataDictionary();
+            viewData.Model = allTemps;
+            //viewData.Add("SpecialMessage", specialMessage);
+
+            //RENDER
+            try
+            {
+                var controllerContext = this.ControllerContext;
+                var displayHtml =
+                    ApiControllerHtmlHelper.GetPartialViewHtml(controllerContext, pvPath, viewData, HttpContext.Current);
+                returnSB.AppendLine(displayHtml);
+            }
+            catch (System.ArgumentNullException eNull)
+            {
+                if (eNull.Message.Contains("Parameter name: view"))
+                {
+                    throw new ArgumentNullException($"The View file '{pvPath}' is missing and cannot be rendered.", eNull);
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            catch (Exception e)
+            { throw; }
+
+            //RETURN AS HTML
+            return new HttpResponseMessage()
+            {
+                Content = new StringContent(
+                    returnSB.ToString(),
+                    Encoding.UTF8,
+                    "text/html"
+                )
+            };
+        }
+
+        /// /Umbraco/backoffice/Api/SiteAuditorApi/GetAllTemplatesAsCsv
+        [System.Web.Http.AcceptVerbs("GET")]
+        public HttpResponseMessage GetAllTemplatesAsCsv()
         {
             var saService = GetSiteAuditorService();
             var returnSB = new StringBuilder();
