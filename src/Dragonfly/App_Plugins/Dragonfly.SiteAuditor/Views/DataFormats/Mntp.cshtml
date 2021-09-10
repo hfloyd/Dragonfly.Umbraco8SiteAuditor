@@ -1,22 +1,54 @@
-
-@model Umbraco.Core.Models.IPublishedProperty
+@inherits UmbracoViewPage<Umbraco.Core.Models.Property>
 
 @{
-    var items = Model.GetValue<IEnumerable<IPublishedContent>>().ToList();
+	var value = Model.GetValue(); //Should be a collection of UDI strings
+	var udis = new List<Udi>();
 
-    if (items.Any())
-    {
-        <ol>
-            @foreach (var item in items)
-            {
-                <li>@item.Name (@item.DocumentTypeAlias)</li>
-            }
-        </ol>
-    }
-    else
-    {
-        <i>No items added</i>
-    }
+	if (value != null)
+	{
+		if (value.ToString().Contains(","))
+		{
+			//Multiple items
+			var values = value.ToString().Split(',');
+			foreach (var val in values)
+			{
+				udis.Add(Udi.Parse(val));
+			}
+		}
+		else
+		{
+			//Single item
+			udis.Add(Udi.Parse(value.ToString()));
+		}
+
+		if (udis.Any())
+		{
+		 <ol>
+				@foreach (var udi in udis)
+				{
+					var item = Umbraco.Content(udi);
+
+			  <li>
+
+				@if (item != null)
+				{
+		   <span>@item.Name (@item.ContentType.Alias)</span>
+		   <br /><small>@udi.ToString()</small>
+				}
+				else
+				{
+				   <span>[Unpublished Node]</span>
+				   <br /><small>@udi.ToString()</small>
+						}
+			  </li>
+				}
+		 </ol>
+		}
+	}
+	else
+	{
+	 <i>(No items selected)</i>
+	}
 }
 
 

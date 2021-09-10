@@ -944,7 +944,7 @@
 
             var allTemps = saService.GetAuditableTemplates();
 
-            string json = JsonConvert.SerializeObject(allTemps);
+            string json = JsonConvert.SerializeObject(allTemps); 
 
             return new HttpResponseMessage()
             {

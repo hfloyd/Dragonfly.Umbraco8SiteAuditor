@@ -1,17 +1,29 @@
-
-@model Umbraco.Core.Models.IPublishedProperty
+@inherits UmbracoViewPage<Umbraco.Core.Models.Property>
 
 @{
-    var item = Model.GetValue<IPublishedContent>();
+    var value = Model.GetValue(); //Should be a UDI string
 
-    if (item != null)
+    if (value != null)
     {
-        <span>@item.Name (@item.DocumentTypeAlias)</span>
+        var udi = Udi.Parse(value.ToString());
+        var item = Umbraco.Content(udi);
+        if (item != null)
+        {
+            <span>
+                @item.Name (@item.ContentType.Alias)
+                <br /><small>@value</small>
+            </span>
+        }
+        else
+        {
+            <span>
+                [Unpublished Node]
+                <br /><small>@value</small>
+            </span>
+        }
     }
     else
     {
-        <i>No item selected</i>
+        <i>(No item selected)</i>
     }
 }
-
-

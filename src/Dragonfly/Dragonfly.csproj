@@ -13,9 +13,9 @@
     <PackageProjectUrl>https://github.com/hfloyd/Dragonfly.Umbraco8SiteAuditor</PackageProjectUrl>
     <RepositoryUrl>https://github.com/hfloyd/Dragonfly.Umbraco8SiteAuditor</RepositoryUrl>
     <PackageId>Dragonfly.Umbraco8SiteAuditor</PackageId>
-    <Version>0.3.0</Version>
+    <Version>0.4.0</Version>
     <AssemblyName>Dragonfly.Umbraco8SiteAuditor</AssemblyName>
-    <PackageReleaseNotes>Additional reports, bug fixes</PackageReleaseNotes>
+    <PackageReleaseNotes>V8 View fixes and updates</PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="SiteAuditor\Models\Dtos\**" />
