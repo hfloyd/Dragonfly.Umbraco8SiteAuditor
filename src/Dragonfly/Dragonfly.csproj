@@ -13,9 +13,9 @@
     <PackageProjectUrl>https://github.com/hfloyd/Dragonfly.Umbraco8SiteAuditor</PackageProjectUrl>
     <RepositoryUrl>https://github.com/hfloyd/Dragonfly.Umbraco8SiteAuditor</RepositoryUrl>
     <PackageId>Dragonfly.Umbraco8SiteAuditor</PackageId>
-    <Version>0.4.0</Version>
+    <Version>0.4.1</Version>
     <AssemblyName>Dragonfly.Umbraco8SiteAuditor</AssemblyName>
-    <PackageReleaseNotes>V8 View fixes and updates</PackageReleaseNotes>
+    <PackageReleaseNotes></PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="SiteAuditor\Models\Dtos\**" />
@@ -41,4 +41,8 @@
   </ItemGroup>
 
   <Import Project="..\Custom.targets" />
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="REM XCOPY /s /y &quot;$(TargetDir)$(TargetName).*&quot; &quot;C:\Users\Heather\NAS Folders\Active Projects\Webs\Clients\GHXL\sourcecode\Ghx.Web\bin&quot;&#xD;&#xA;XCOPY /s /y /i &quot;$(ProjectDir)App_Plugins\*&quot; &quot;C:\Users\Heather\NAS Folders\Active Projects\Webs\Clients\GHXL\sourcecode\Ghx.Web\App_Plugins&quot;&#xD;&#xA;&#xD;&#xA;REM XCOPY /s /y &quot;$(TargetDir)$(TargetName).*&quot; &quot;C:\Users\Heather\NAS Folders\Active Projects\Webs\Clients\GHXL\sourcecode-GHXV7\UmbracoCms.8.14.0\bin&quot;&#xD;&#xA;REM XCOPY /s /y /i &quot;$(ProjectDir)App_Plugins\*&quot; &quot;C:\Users\Heather\NAS Folders\Active Projects\Webs\Clients\GHXL\sourcecode-GHXV7\UmbracoCms.8.14.0\App_Plugins&quot;&#xD;&#xA;" />
+  </Target>
 </Project>

@@ -383,7 +383,7 @@
             returnSB.AppendLine($"<h3>Available Properties</h3>");
             //returnSB.AppendLine("<p>Note: Choosing the 'All' option will take significantly longer to load than the 'Published' option because we need to bypass the cache and query the database directly.</p>");
 
-            returnSB.AppendLine("<ul>");
+            returnSB.AppendLine("<ol>");
 
             foreach (var propAlias in allPropsAliases.OrderBy(n => n))
             {
@@ -394,7 +394,7 @@
                 returnSB.AppendLine($"<li>{propAlias} <a target=\"_blank\" href=\"{url2}\">View</a></li>");
             }
 
-            returnSB.AppendLine("</ul>");
+            returnSB.AppendLine("</ol>");
 
             return new HttpResponseMessage()
             {
@@ -842,7 +842,7 @@
             };
         }
 
-        /// /Umbraco/backoffice/Api/SiteAuditorApi/GetAllDocTypesAsHtml
+        /// /Umbraco/backoffice/Api/SiteAuditorApi/GetAllDocTypesAsHtmlTable
         [System.Web.Http.AcceptVerbs("GET")]
         public HttpResponseMessage GetAllDocTypesAsHtmlTable()
         {

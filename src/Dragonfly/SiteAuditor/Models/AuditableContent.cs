@@ -12,6 +12,13 @@
     [DataContract]
     public class AuditableContent
     {
+        #region Private vars
+        //private UmbracoHelper umbHelper = new UmbracoHelper(UmbracoContext.Current);
+       // private IContentService umbContentService = ApplicationContext.Current.Services.ContentService;
+
+        private string _defaultDelimiter = " » ";
+        #endregion
+
         #region Public Props
         /// <summary>
         /// Gets or sets the content node as an IContent
@@ -31,12 +38,28 @@
         /// </returns>
         public IEnumerable<string> NodePath { get; internal set; }
 
+        /// <summary>
+        /// Default string used for NodePathAsText
+        /// ' » ' unless explicitly changed
+        /// </summary>
+        public string DefaultDelimiter
+        {
+            get { return _defaultDelimiter; }
+            internal set { _defaultDelimiter = value; }
+        }
 
         /// <summary>
         /// Full path to node in a single delimited string using object's default delimiter
         /// </summary>
-        public string NodePathAsText { get; internal set; }
+        public string NodePathAsText
+        {
+            get
+            {
        
+                var nodePath = string.Join(this.DefaultDelimiter, this.NodePath);
+                return nodePath;
+            }
+        }
 
         /// <summary>
         /// Alias of the Template assigned to this Content Node. Returns "NONE" if there is no template.

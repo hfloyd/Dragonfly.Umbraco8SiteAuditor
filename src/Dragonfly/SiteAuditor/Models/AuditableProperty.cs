@@ -36,7 +36,7 @@
 
         [DataMember]
         public Dictionary<string, string> DataTypeConfigDictionary { get; internal set; }
-
+ 
         [DataMember]
         public Type DataTypeConfigType { get; internal set; }
 
