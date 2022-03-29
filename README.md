@@ -19,7 +19,7 @@ http://Yoursite.com/Umbraco/backoffice/Api/SiteAuditorApi/Help
 
 *NOTE: You need to be logged-in to the Umbraco back-office in order to access the tools.
 
-You can edit some of the tools' output via the Partial Views installed in /Views/Partials/SiteAuditor
+You can edit some of the tools' output via the Views installed in /App_Plugins/Dragonfly.SiteAuditor/Views
 
 ## Resources ##
 
