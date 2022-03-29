@@ -13,7 +13,7 @@
     <PackageProjectUrl>https://github.com/hfloyd/Dragonfly.Umbraco8SiteAuditor</PackageProjectUrl>
     <RepositoryUrl>https://github.com/hfloyd/Dragonfly.Umbraco8SiteAuditor</RepositoryUrl>
     <PackageId>Dragonfly.Umbraco8SiteAuditor</PackageId>
-    <Version>0.4.1</Version>
+    <Version>0.5.0</Version>
     <AssemblyName>Dragonfly.Umbraco8SiteAuditor</AssemblyName>
     <PackageReleaseNotes></PackageReleaseNotes>
   </PropertyGroup>
@@ -38,6 +38,27 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_Plugins\Dragonfly.SiteAuditor\Views\AllContentAsHtmlTable.cshtml" />
+    <Content Include="App_Plugins\Dragonfly.SiteAuditor\Views\ContentWithValuesTable.cshtml" />
+    <Content Include="App_Plugins\Dragonfly.SiteAuditor\Views\DataFormats\ContentPicker.cshtml" />
+    <Content Include="App_Plugins\Dragonfly.SiteAuditor\Views\DataFormats\DateValue.cshtml" />
+    <Content Include="App_Plugins\Dragonfly.SiteAuditor\Views\DataFormats\DocTypeInfo.cshtml" />
+    <Content Include="App_Plugins\Dragonfly.SiteAuditor\Views\DataFormats\MediaImage.cshtml" />
+    <Content Include="App_Plugins\Dragonfly.SiteAuditor\Views\DataFormats\Mntp.cshtml" />
+    <Content Include="App_Plugins\Dragonfly.SiteAuditor\Views\DataFormats\NestedContent.cshtml" />
+    <Content Include="App_Plugins\Dragonfly.SiteAuditor\Views\DataFormats\NodeActions.cshtml" />
+    <Content Include="App_Plugins\Dragonfly.SiteAuditor\Views\DataFormats\PropertyDataValue.cshtml" />
+    <Content Include="App_Plugins\Dragonfly.SiteAuditor\Views\DataFormats\PropertyTypeInfo.cshtml" />
+    <Content Include="App_Plugins\Dragonfly.SiteAuditor\Views\DataFormats\Tags.cshtml" />
+   
+    <Content Include="App_Plugins/Dragonfly.SiteAuditor/**/*.*">
+      <Pack>true</Pack>
+      <BuildAction>Content</BuildAction>
+      <IncludeInPackage>true</IncludeInPackage>
+      <CopyToOutput>true</CopyToOutput>
+    </Content>
   </ItemGroup>
 
   <Import Project="..\Custom.targets" />

@@ -352,7 +352,7 @@
             ac.RelativeNiceUrl = ac.UmbPublishedNode != null ? ac.UmbPublishedNode.Url(mode: UrlMode.Relative) : "UNPUBLISHED";
             ac.FullNiceUrl = ac.UmbPublishedNode != null ? ac.UmbPublishedNode.Url(mode: UrlMode.Absolute) : "UNPUBLISHED";
             ac.NodePath = AuditHelper.NodePath(ThisIContent);
-            ac.NodePathAsText = string.Join(this.DefaultDelimiter, ac.NodePath);
+            //ac.NodePathAsText = string.Join(this.DefaultDelimiter, ac.NodePath);
 
             return ac;
         }
