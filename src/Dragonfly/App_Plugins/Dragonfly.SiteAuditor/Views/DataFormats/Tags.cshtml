@@ -1,41 +1,46 @@
-@using Dragonfly.Umbraco7Helpers
+@using Dragonfly.UmbracoHelpers
 
 
-@model Umbraco.Core.Models.IPublishedProperty
+@inherits UmbracoViewPage<Umbraco.Core.Models.Property>
 
 @{
     var fancyFormat = Mvc.GetSafeViewDataBool(ViewData, "FancyFormat", true);
     var tagFilterName = Mvc.GetSafeViewDataString(ViewData, "TagFilterName", "TagFilter");
-    var tagData = Model.GetValue<IEnumerable<string>>().ToList();
 
-    if (tagData != null && tagData.Any())
+    var value = Model.GetValue();
+    if (value != null)
     {
-        if (fancyFormat)
+        var tagData = value.ToString().Split(',').ToList();
+
+        if (tagData != null && tagData.Any())
         {
-            foreach (var tag in tagData)
+            if (fancyFormat)
             {
-                var tagUrl = Dragonfly.NetHelpers.Url.AppendQueryStringToUrl(Request.Url, tagFilterName, tag);
+                foreach (var tag in tagData)
+                {
+                    var tagUrl = Dragonfly.NetHelpers.Url.AppendQueryStringToUrl(Request.Url, tagFilterName, tag);
 
-                <a href="@tagUrl"><span class="label label-primary">@tag</span></a>
+                    <a href="@tagUrl"><span class="label label-primary">@tag</span></a>
+                }
             }
+            else
+            {
+                <span>@string.Join(", ", tagData)</span>
+            }
+
         }
         else
         {
-            <span>@string.Join(", ", tagData)</span>
-        }
+            if (fancyFormat)
+            {
+                var tagUrl = Dragonfly.NetHelpers.Url.AppendQueryStringToUrl(Request.Url, tagFilterName, "none");
 
-    }
-    else
-    {
-        if (fancyFormat)
-        {
-            var tagUrl = Dragonfly.NetHelpers.Url.AppendQueryStringToUrl(Request.Url, tagFilterName, "none");
-
-            <a href="@tagUrl"><span class="label label-default">none</span></a>
-        }
-        else
-        {
-            <i>none</i>
+                <a href="@tagUrl"><span class="label label-default">none</span></a>
+            }
+            else
+            {
+                <i>none</i>
+            }
         }
     }
 }

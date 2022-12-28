@@ -1,36 +1,38 @@
 @using Dragonfly.UmbracoModels.Helpers
-@using Dragonfly.Umbraco7Helpers
+@using Dragonfly.UmbracoHelpers
 @using Dragonfly.UmbracoModels
 @using Umbraco.Core.Logging
 
-@model Umbraco.Core.Models.IPublishedProperty
+@inherits UmbracoViewPage<Umbraco.Core.Models.Property>
 
 @{
     var fancyFormat = Mvc.GetSafeViewDataBool(ViewData, "FancyFormat", true);
     var imageWidth = Mvc.GetSafeViewDataInt(ViewData, "ImageWidth", 300);
-    var umbracoHelper = new UmbracoHelper(UmbracoContext.Current);
+    //var umbracoHelper = new UmbracoHelper(UmbracoContext.Current);
 
-    var iPubMedia = Model.GetValue<IPublishedContent>();
-
-    var mediaImage = iPubMedia.ToMediaImage();
-
-    if (mediaImage.Url != "")
+    var value = Model.GetValue();
+    if (value != null)
     {
-        if (fancyFormat)
+        var udi = Udi.Parse(value.ToString());
+        var iPubMedia = Umbraco.Content(udi);
+       
+        if (iPubMedia.Url() != "")
         {
-            var mediaPath = Development.MediaPath(iPubMedia);
-            <img src="@mediaImage.Url" width="@imageWidth" />
-            <div>@mediaPath</div>
-            <div><small>@mediaImage.Url</small></div>
+            if (fancyFormat)
+            {
+                var mediaPath = Development.MediaPath(iPubMedia);
+                <img src="@iPubMedia.Url()" width="@imageWidth"/>
+                <div>@mediaPath</div>
+                <div><small>@iPubMedia.Url()</small></div>
+            }
+            else
+            {
+                @iPubMedia.Url()
+            }
         }
         else
         {
-            @mediaImage.Url
+            <i>none</i>
         }
     }
-    else
-    {
-        <i>none</i>
-    }
-
 }
